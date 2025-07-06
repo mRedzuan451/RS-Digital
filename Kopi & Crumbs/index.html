@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kopi & Crumbs Bakeshop | Ara Damansara</title>
+    
+    <!-- Google Fonts: Poppins for headings, Lato for body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons (Menu & Socials) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+        /* =========================================
+           STYLE.CSS FOR KOPI & CRUMBS BAKESHOP
+           - Mobile-First Approach
+           - Vanilla CSS (Flexbox & Grid)
+           - Well-commented for junior developers
+           ========================================= */
+
+        /* ===== CSS Variables (Color Palette) ===== */
+        :root {
+            --background-color: #F8F5F2; /* Warm beige */
+            --text-color: #3D352E;       /* Dark coffee brown */
+            --primary-color: #E8A37F;    /* Muted terracotta/peach */
+            --secondary-color: #6F665E;  /* Mid-tone taupe */
+            --white: #FFFFFF;
+            --footer-bg: #3D352E;
+            --font-heading: 'Poppins', sans-serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        /* ===== General Styles & Resets ===== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px; 
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            color: var(--text-color);
+            line-height: 1.2;
+            font-weight: 600;
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+
+        p { margin-bottom: 1rem; }
+        a { color: var(--primary-color); text-decoration: none; transition: color 0.3s ease; }
+        a:hover { color: var(--text-color); }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* ===== Utility Classes ===== */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover { color: var(--white); }
+
+        /* ===== Header & Navigation ===== */
+        .main-header {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .nav-links {
+            position: fixed;
+            top: 0; right: 0;
+            width: 70%;
+            height: 100vh;
+            background-color: var(--background-color);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+        }
+
+        .nav-open .nav-links { transform: translateX(0); }
+        .nav-open .nav-toggle .hamburger { transform: rotate(45deg); }
+        .nav-open .nav-toggle .hamburger::before { transform: rotate(-90deg); top: 0; }
+        .nav-open .nav-toggle .hamburger::after { opacity: 0; }
+
+        .nav-link { font-size: 1.2rem; font-weight: 600; color: var(--text-color); }
+        .nav-toggle { display: block; background: transparent; border: none; cursor: pointer; padding: 0.5rem; z-index: 1001; }
+        .hamburger, .hamburger::before, .hamburger::after { content: ''; display: block; width: 25px; height: 3px; background-color: var(--text-color); border-radius: 3px; transition: transform 0.3s ease, opacity 0.3s ease; }
+        .hamburger::before { transform: translateY(-8px); }
+        .hamburger::after { transform: translateY(5px); }
+        .header-cta { display: none; }
+        .nav-cta-mobile { display: block; background-color: var(--primary-color); color: var(--white); padding: 0.75rem 1.5rem; border-radius: 50px; }
+        .nav-cta-mobile:hover { color: var(--white); }
+
+        /* ===== Hero Section ===== */
+        .hero { min-height: 90vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; background: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=2047&auto=format&fit=crop') no-repeat center center/cover; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(61, 53, 46, 0.5); }
+        .hero-content { position: relative; z-index: 2; color: var(--white); }
+        .hero h1, .hero .subtitle { color: var(--white); }
+        .hero h1 { margin-bottom: 1rem; }
+        .hero .subtitle { font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem; }
+
+        /* ===== General Section Styling ===== */
+        section { padding: 5rem 0; }
+        #menu, #testimonials { background-color: var(--white); }
+
+        /* ===== About Us Section ===== */
+        .about-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center; }
+        .about-image { 
+            width: 100%; 
+            height: 300px; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden; /* This makes the image respect the border-radius */
+        }
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* This makes the image fill the container without stretching */
+            transition: transform 0.4s ease;
+        }
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+        .about-text { text-align: center; }
+
+        /* ===== NEW: Gallery Section ===== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
+            gap: 1rem;
+        }
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* ===== UPDATED: Menu Section ===== */
+        .detailed-menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+        .menu-category h3 {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        .menu-category h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+        .menu-item .item-name {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        .menu-item .item-price {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0;
+        }
+        .item-description {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-top: -0.5rem;
+        }
+
+        /* ===== NEW: Testimonials Section ===== */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        .testimonial-card {
+            background-color: var(--background-color);
+            border: 1px solid #e0d9d1;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .testimonial-card .stars {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .testimonial-card .quote {
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        .testimonial-card .author {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0;
+        }
+
+        /* ===== UPDATED: Contact Section ===== */
+        .contact-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; background: var(--white); padding: 2rem; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .map-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .btn-whatsapp { background-color: #25D366; color: var(--white); width: 100%; margin-bottom: 1rem; }
+        .btn-whatsapp:hover { color: var(--white); background-color: #1DAE52; }
+        .btn-whatsapp i { margin-right: 0.5rem; }
+        .contact-email a { font-weight: bold; }
+
+        /* ===== Footer ===== */
+        .main-footer { background-color: var(--footer-bg); color: #c9c3bd; padding: 2rem 0; text-align: center; }
+        .footer-container { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+        .social-links a { color: #c9c3bd; font-size: 1.25rem; margin: 0 0.5rem; }
+        .social-links a:hover { color: var(--primary-color); }
+
+        /* =========================================
+           MEDIA QUERIES (Tablet and Desktop)
+           ========================================= */
+        @media (min-width: 768px) {
+            h1 { font-size: 3rem; }
+            h2 { font-size: 2.5rem; }
+
+            .nav-toggle, .nav-cta-mobile { display: none; }
+            .header-cta { display: inline-block; background-color: var(--primary-color); color: var(--white); padding: 0.5rem 1.25rem; border-radius: 50px; }
+            .header-cta:hover { color: var(--white); transform: translateY(-2px); }
+            .nav-links { position: static; flex-direction: row; width: auto; height: auto; background-color: transparent; transform: none; gap: 1.5rem; }
+            .nav-link { font-size: 1rem; }
+
+            .about-grid { grid-template-columns: 1fr 1.2fr; gap: 3rem; }
+            .about-text { text-align: left; }
+            .about-image { height: 400px; }
+
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+
+            .detailed-menu-grid { grid-template-columns: repeat(2, 1fr); }
+            
+            .testimonial-grid { grid-template-columns: repeat(2, 1fr); }
+
+            .contact-grid { grid-template-columns: 1fr 1fr; padding: 3rem; gap: 4rem; }
+            .btn-whatsapp { width: auto; }
+            
+            .footer-container { flex-direction: row; justify-content: space-between; }
+        }
+
+        @media (min-width: 1024px) {
+            body { font-size: 17px; }
+            h1 { font-size: 3.5rem; }
+            .container { padding: 0 2rem; }
+            section { padding: 6rem 0; }
+            .detailed-menu-grid { grid-template-columns: repeat(3, 1fr); }
+            .testimonial-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== Header Section ===== -->
+    <header class="main-header">
+        <div class="container header-container">
+            <a href="#home" class="logo">Kopi & Crumbs</a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="#home" class="nav-link">Home</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                    <li><a href="#menu" class="nav-link">Menu</a></li>
+                    <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                    <li><a href="#contact" class="btn nav-cta-mobile">Order on WhatsApp</a></li>
+                </ul>
+            </nav>
+            <a href="#contact" class="btn header-cta">Order on WhatsApp</a>
+        </div>
+    </header>
+
+    <!-- ===== Main Content ===== -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <h1>Your Daily Dose of Comfort & Coffee.</h1>
+                <p class="subtitle">Artisanal bakes and specialty coffee, crafted with love in the heart of Ara Damansara.</p>
+                <a href="#menu" class="btn btn-primary">View Our Menu</a>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about">
+            <div class="container">
+                <h2 class="section-title">From Our Kitchen to Your Heart</h2>
+                <div class="about-grid">
+                    <div class="about-image">
+                        <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=1964&auto=format&fit=crop" alt="Warm and cozy interior of the Kopi & Crumbs bakeshop">
+                    </div>
+                    <div class="about-text">
+                        <p>Kopi & Crumbs started with a simple idea: to create a cozy corner in Petaling Jaya where good coffee and great company come together. We bake our pastries fresh every morning and brew each cup with passion. Come say hi!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery">
+            <div class="container">
+                <h2 class="section-title">A Glimpse of Our Goodness</h2>
+                <div class="gallery-grid">
+                    <div class="gallery-item"><img src="assets/latte art.jpg"></div>
+                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1585238342070-61e1e768b1ff?q=80&w=600&h=600&fit=crop" alt="Freshly baked croissants"></div>
+                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=600&h=600&fit=crop" alt="Cozy interior of the cafe"></div>
+                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1608198093002-ad4e005484ec?q=80&w=600&h=600&fit=crop" alt="Artisanal sourdough bread"></div>
+                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=600&h=600&fit=crop" alt="A person enjoying a cup of coffee"></div>
+                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?q=80&w=600&h=600&fit=crop" alt="A delicious brunch plate with eggs"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Section -->
+        <section id="menu">
+            <div class="container">
+                <h2 class="section-title">Our Signature Offerings</h2>
+                <div class="detailed-menu-grid">
+                    <div class="menu-category">
+                        <h3><i class="fas fa-coffee"></i> Coffee & Drinks</h3>
+                        <div class="menu-item"><p class="item-name">Espresso</p><p class="item-price">RM 8</p></div>
+                        <p class="item-description">A concentrated shot of our house blend.</p>
+                        <div class="menu-item"><p class="item-name">Long Black</p><p class="item-price">RM 10</p></div>
+                        <p class="item-description">Espresso shots pulled over hot water.</p>
+                        <div class="menu-item"><p class="item-name">Latte / Cappuccino</p><p class="item-price">RM 12</p></div>
+                        <p class="item-description">Rich espresso with steamed, frothy milk.</p>
+                        <div class="menu-item"><p class="item-name">Matcha Latte</p><p class="item-price">RM 13</p></div>
+                        <p class="item-description">Ceremonial grade matcha with fresh milk.</p>
+                    </div>
+                    <div class="menu-category">
+                        <h3><i class="fas fa-cookie-bite"></i> Pastries & Bakes</h3>
+                        <div class="menu-item"><p class="item-name">Butter Croissant</p><p class="item-price">RM 9</p></div>
+                        <p class="item-description">Flaky, buttery, and baked fresh daily.</p>
+                        <div class="menu-item"><p class="item-name">Pain au Chocolat</p><p class="item-price">RM 11</p></div>
+                        <p class="item-description">Classic croissant with dark chocolate batons.</p>
+                        <div class="menu-item"><p class="item-name">Burnt Cheesecake</p><p class="item-price">RM 16</p></div>
+                        <p class="item-description">Creamy, rich, with a caramelized top.</p>
+                        <div class="menu-item"><p class="item-name">Sourdough Loaf</p><p class="item-price">RM 20</p></div>
+                        <p class="item-description">Naturally leavened, available on weekends.</p>
+                    </div>
+                    <div class="menu-category">
+                        <h3><i class="fas fa-utensils"></i> All-Day Brunch</h3>
+                        <div class="menu-item"><p class="item-name">Avocado Toast</p><p class="item-price">RM 22</p></div>
+                        <p class="item-description">Smashed avocado on sourdough with feta.</p>
+                        <div class="menu-item"><p class="item-name">Big Breakfast</p><p class="item-price">RM 28</p></div>
+                        <p class="item-description">Eggs, sausage, mushrooms, beans, and toast.</p>
+                        <div class="menu-item"><p class="item-name">Smoked Salmon Bagel</p><p class="item-price">RM 25</p></div>
+                        <p class="item-description">Toasted bagel with cream cheese and salmon.</p>
+                        <div class="menu-item"><p class="item-name">Granola Bowl</p><p class="item-price">RM 18</p></div>
+                        <p class="item-description">House-made granola with yogurt and fruits.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials">
+            <div class="container">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <div class="testimonial-grid">
+                    <div class="testimonial-card">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"The best coffee in PJ, hands down! The burnt cheesecake is a must-try. Such a cozy and welcoming vibe."</p>
+                        <p class="author">- Sarah L.</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                        <p class="quote">"My go-to spot for weekend brunch. The Big Breakfast is fantastic value and the staff are always so friendly."</p>
+                        <p class="author">- David C.</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                        <p class="quote">"A hidden gem in Ara Damansara. I love their sourdough and the croissants are perfectly flaky. Highly recommended!"</p>
+                        <p class="author">- Aina B.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact">
+            <div class="container">
+                <h2 class="section-title">Come Visit Us or Say Hello!</h2>
+                <div class="contact-grid">
+                    <div class="contact-details">
+                        <h4>Find Us Here</h4>
+                        <div class="map-container">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15935.21289958319!2d101.5736423554199!3d3.111883399999993!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc4d89d85ff675%3A0x80c3e1d58383e099!2sAra%20Damansara%2C%2047301%20Petaling%20Jaya%2C%20Selangor!5e0!3m2!1sen!2smy!4v1720016869818!5m2!1sen!2smy" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h4>Order & Enquiries</h4>
+                        <p>
+                            <strong>Address:</strong><br>
+                            123 Jalan PJU 1A/4, Ara Damansara<br>
+                            47301 Petaling Jaya, Selangor
+                        </p>
+                        <p>
+                            <strong>Hours:</strong><br>
+                            Mon - Fri: 8 AM - 7 PM | Sat - Sun: 9 AM - 8 PM
+                        </p>
+                        <a href="https://wa.me/60123456789" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                        </a>
+                        <p class="contact-email">
+                            Email: <a href="mailto:hello@kopiandcrumbs.my">hello@kopiandcrumbs.my</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== Footer Section ===== -->
+    <footer class="main-footer">
+        <div class="container footer-container">
+            <p>&copy; 2025 Kopi & Crumbs Bakeshop. All Rights Reserved.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple JavaScript for Mobile Menu Toggle -->
+    <script>
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        navToggle.addEventListener('click', () => {
+            document.body.classList.toggle('nav-open');
+        });
+
+        document.querySelectorAll('.nav-link, .nav-cta-mobile').forEach(link => {
+            link.addEventListener('click', () => {
+                document.body.classList.remove('nav-open');
+            });
+        });
+    </script>
+
+</body>
+</html>

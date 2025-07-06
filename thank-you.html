@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You! | RS Digital</title>
+    <meta name="description" content="Thank you for your submission.">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* This is a simplified version of your main CSS for consistency */
+        :root {
+            --bg-color: #0a192f;
+            --card-bg-color: #112240;
+            --heading-color: #ccd6f6;
+            --text-color: #8892b0;
+            --accent-color: #64ffda;
+            --button-text-color: #0a192f;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        body.light-mode {
+            --bg-color: #F7F9FC;
+            --card-bg-color: #FFFFFF;
+            --heading-color: #1A2A4C;
+            --text-color: #555555;
+            --accent-color: #007BFF;
+            --button-text-color: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .thank-you-container {
+            background-color: var(--card-bg-color);
+            padding: 40px;
+            border-radius: 8px;
+            max-width: 600px;
+        }
+        h1 {
+            color: var(--heading-color);
+            margin-bottom: 20px;
+        }
+        p {
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            transition: opacity 0.3s ease;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="thank-you-container">
+        <h1>Thank You!</h1>
+        <p>Your submission has been received. I'll review your answers and get back to you within 1-2 business days.</p>
+        <a href="index.html" class="btn">Back to Home</a>
+    </div>
+
+    <script>
+        // Simple theme check to style the thank you page consistently
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+        }
+    </script>
+</body>
+</html>
