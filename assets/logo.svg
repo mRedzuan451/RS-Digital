@@ -1,0 +1,83 @@
+<svg width="255" height="100" viewBox="0 0 255 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- 
+    SVG Logo for RS Digital
+    Generated from the HTML/CSS design.
+    This SVG is scalable and optimized for web use.
+  -->
+  <defs>
+    <!-- It's recommended to have Google Fonts loaded in your webpage's CSS -->
+    <!-- This style block helps some SVG viewers render the font correctly -->
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@600&display=swap');
+    </style>
+  </defs>
+
+  <!-- Main Logo Group -->
+  <g id="logo-group">
+    
+    <!-- Graphic Element (Squares and Letters) -->
+    <g id="logo-graphic">
+      <!-- Back Square (from ::before pseudo-element) -->
+      <!-- Centered at (60, 50) with a 25-degree rotation -->
+      <rect 
+        x="15" 
+        y="5" 
+        width="90" 
+        height="90" 
+        rx="8" 
+        stroke="#4A4A4A" 
+        stroke-width="5" 
+        fill="none" 
+        transform="rotate(25 60 50)" 
+      />
+      
+      <!-- Front Square (from ::after pseudo-element) -->
+      <!-- Centered at (60, 50) with a -25-degree rotation -->
+      <rect 
+        x="15" 
+        y="5" 
+        width="90" 
+        height="90" 
+        rx="8" 
+        stroke="#00E5FF" 
+        stroke-width="5" 
+        fill="none" 
+        transform="rotate(-25 60 50)" 
+      />
+      
+      <!-- Letters 'R' and 'S' -->
+      <!-- The text-anchor and dominant-baseline properties help center the text accurately -->
+      <text 
+        x="50" 
+        y="50" 
+        font-family="Montserrat, sans-serif" 
+        font-weight="700" 
+        font-size="48px" 
+        fill="#00E5FF" 
+        text-anchor="middle" 
+        dominant-baseline="central">R</text>
+      <text 
+        x="80" 
+        y="50" 
+        font-family="Montserrat, sans-serif" 
+        font-weight="700" 
+        font-size="48px" 
+        fill="#FF4136" 
+        text-anchor="middle" 
+        dominant-baseline="central">S</text>
+    </g>
+    
+    <!-- Tagline "Digital" -->
+    <text 
+      x="135" 
+      y="50" 
+      font-family="Poppins, sans-serif" 
+      font-weight="600" 
+      font-size="32px" 
+      fill="#888" 
+      letter-spacing="3" 
+      text-anchor="start" 
+      dominant-baseline="central">DIGITAL</text>
+      
+  </g>
+</svg>
