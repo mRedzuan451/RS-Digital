@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard | RS Digital</title>
+    <meta name="description" content="Private client dashboard.">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* This is a simplified version of your main CSS for consistency */
+        :root {
+            --bg-color: #0a192f;
+            --card-bg-color: #112240;
+            --border-color: #233554;
+            --heading-color: #ccd6f6;
+            --text-color: #8892b0;
+            --light-text-color: #a8b2d1;
+            --accent-color: #64ffda;
+            --button-text-color: #0a192f;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        body.light-mode {
+            --bg-color: #F7F9FC;
+            --card-bg-color: #FFFFFF;
+            --border-color: #e0e0e0;
+            --heading-color: #1A2A4C;
+            --text-color: #555555;
+            --light-text-color: #333333;
+            --accent-color: #007BFF;
+            --button-text-color: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            padding: 20px;
+        }
+        body.light-mode {
+             background-image: url('assets/light-background.jpg');
+        }
+        .dashboard-wrapper {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: var(--heading-color);
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            transition: opacity 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+        .welcome-message span {
+            font-weight: bold;
+            color: var(--light-text-color);
+        }
+        .dashboard-content {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <div class="dashboard-header">
+            <h1>Client Dashboard</h1>
+            <button id="logout-button" class="btn">Logout</button>
+        </div>
+        <div class="dashboard-content">
+            <p class="welcome-message">Welcome, <span id="user-email">client</span>!</p>
+            <p>This is your private dashboard. Here you will be able to track project progress, view invoices, and download files.</p>
+            <!-- Future content will go here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { handleLogout, checkAuthState } from './assets/auth.js';
+
+        // Simple theme check to style the page consistently
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+        }
+
+        const logoutButton = document.getElementById('logout-button');
+        logoutButton.addEventListener('click', handleLogout);
+
+        // Protect this page
+        checkAuthState(user => {
+            if (user) {
+                // User is signed in.
+                const userEmailElement = document.getElementById('user-email');
+                userEmailElement.textContent = user.email;
+            } else {
+                // No user is signed in. Redirect to login.
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
+</body>
+</html>
