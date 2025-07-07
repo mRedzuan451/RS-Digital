@@ -498,13 +498,9 @@
             </a>
             <div class="nav-controls">
                 <ul class="nav-links">
-                     <li><a href="index.html#home">Home</a></li>
-                    <li><a href="index.html#services">Services</a></li>
-                    <li><a href="index.html#work">My Work</a></li>
-                    <li><a href="questionnaire.html">Questionnaire</a></li>
-                    <li><a href="index.html#contact">Contact</a></li>
+                     <li><a href="index.html">Home</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
                 </ul>
-                <a href="questionnaire.html" class="btn btn-cta">Get a Quote</a>
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
                     <i class="fas fa-sun"></i>
                 </button>
@@ -678,7 +674,7 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p><strong>RS Digital (SSM Reg. No: 001234567-X)</strong></p>
+            <p><strong>RS Digital (SSM Reg. No: xxxxxxxxx-X)</strong></p>
             <p>© 2025 RS Digital. Built with ❤️ in Petaling Jaya.</p>
             <div class="social-links">
                 <a href="#" aria-label="LinkedIn Profile"><i class="fab fa-linkedin"></i></a>
@@ -687,61 +683,21 @@
         </div>
     </footer>
 
-    <script>
-        // --- Mobile Menu Toggle ---
-        const menuToggle = document.getElementById('menu-toggle');
-        const navLinks = document.querySelector('.nav-links');
+    <script type="module">
+        import { checkAuthState } from './assets/auth.js';
 
-        if(menuToggle) {
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                const isExpanded = navLinks.classList.contains('active');
-                menuToggle.setAttribute('aria-expanded', isExpanded);
-            });
-        }
-
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navLinks.classList.contains('active')) {
-                    navLinks.classList.remove('active');
-                    if(menuToggle) menuToggle.setAttribute('aria-expanded', 'false');
-                }
-            });
-        });
-
-        // --- Theme Switcher ---
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        const themeIcon = themeToggle.querySelector('i');
-
-        const setTheme = (isLight) => {
-            if (isLight) {
-                body.classList.add('light-mode');
-                themeIcon.classList.remove('fa-sun');
-                themeIcon.classList.add('fa-moon');
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.remove('light-mode');
-                themeIcon.classList.remove('fa-moon');
-                themeIcon.classList.add('fa-sun');
-                localStorage.setItem('theme', 'dark');
-            }
-        };
-        
+        // Simple theme check to style the page consistently
         const savedTheme = localStorage.getItem('theme');
-        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-
         if (savedTheme === 'light') {
-            setTheme(true);
-        } else if (savedTheme === 'dark') {
-            setTheme(false);
-        } else {
-            setTheme(prefersLight);
+            document.body.classList.add('light-mode');
         }
 
-        themeToggle.addEventListener('click', () => {
-            const isLight = body.classList.contains('light-mode');
-            setTheme(!isLight);
+        // Protect this page
+        checkAuthState(user => {
+            if (!user) {
+                // No user is signed in. Redirect to login.
+                window.location.href = '/login.html';
+            }
         });
 
         // --- Conditional Form Logic ---
@@ -762,10 +718,11 @@
         }
 
         // Initial check on page load
-        toggleQuestionSections();
-
-        // Add event listener for changes
-        siteTypeSelector.addEventListener('change', toggleQuestionSections);
+        if(siteTypeSelector) {
+            toggleQuestionSections();
+            // Add event listener for changes
+            siteTypeSelector.addEventListener('change', toggleQuestionSections);
+        }
 
     </script>
 
