@@ -12,7 +12,114 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* ... Your existing CSS styles ... */
+        /* --- CSS Variables (Dark Theme) --- */
+        :root {
+            --bg-color: #0a192f;
+            --card-bg-color: #112240;
+            --border-color: #233554;
+            --heading-color: #ccd6f6;
+            --text-color: #8892b0;
+            --light-text-color: #a8b2d1;
+            --accent-color: #64ffda;
+            --button-text-color: #0a192f;
+            --font-family: 'Poppins', sans-serif;
+        }
+
+        /* --- CSS Variables (Light Theme) --- */
+        body.light-mode {
+            --bg-color: #F7F9FC;
+            --card-bg-color: #FFFFFF;
+            --border-color: #e0e0e0;
+            --heading-color: #1A2A4C;
+            --text-color: #555555;
+            --light-text-color: #333333;
+            --accent-color: #007BFF;
+            --button-text-color: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            padding: 20px;
+        }
+        body.light-mode {
+             background-image: url('assets/light-background.jpg');
+        }
+        h1, h2 {
+            color: var(--heading-color);
+        }
+        h2 {
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        /* --- Dashboard Specific Styles --- */
+        .dashboard-wrapper {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            transition: opacity 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            opacity: 0.85;
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+        .welcome-message span {
+            font-weight: bold;
+            color: var(--light-text-color);
+        }
+        .dashboard-content {
+            text-align: left;
+        }
+        .project-status {
+            background-color: var(--bg-color);
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 5px solid var(--accent-color);
+        }
+        .project-status p {
+            color: var(--light-text-color);
+        }
+        .project-status strong {
+            color: var(--heading-color);
+        }
+        .new-project-cta {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -35,7 +142,7 @@
     <script type="module">
         import { handleLogout, checkAuthState, getUserProject } from './assets/auth.js';
 
-        // --- Theme Management ---
+        // Simple theme check to style the page consistently
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
@@ -71,7 +178,7 @@
                     projectDisplayElement.innerHTML = `
                         <h2>Welcome!</h2>
                         <div class="project-status">
-                            <p>You currently have no active projects.</p>
+                            <p><strong>You currently have no active projects.</strong></p>
                         </div>
                         <div class="new-project-cta">
                             <h2>Ready to start a new project?</h2>
@@ -82,7 +189,7 @@
                 }
 
             } 
-            // The else case (redirecting) is handled by checkAuthState
+            // The else case (redirecting to login) is handled by the checkAuthState function
         });
     </script>
 </body>
