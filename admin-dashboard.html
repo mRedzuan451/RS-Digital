@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* ... Your existing CSS ... */
+        /* --- CSS Variables (Dark Theme) --- */
         :root {
             --bg-color: #0a192f;
             --card-bg-color: #112240;
@@ -25,7 +25,82 @@
             --font-family: 'Poppins', sans-serif;
         }
 
-        /* NEW STYLES FOR ADMIN DASHBOARD */
+        /* --- CSS Variables (Light Theme) --- */
+        body.light-mode {
+            --bg-color: #F7F9FC;
+            --card-bg-color: #FFFFFF;
+            --border-color: #e0e0e0;
+            --heading-color: #1A2A4C;
+            --text-color: #555555;
+            --light-text-color: #333333;
+            --accent-color: #007BFF;
+            --button-text-color: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font-family);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            padding: 20px;
+        }
+        body.light-mode {
+             background-image: url('assets/light-background.jpg');
+        }
+        h1, h2 {
+            color: var(--heading-color);
+        }
+
+        /* --- Base Dashboard & Button Styles --- */
+        .dashboard-wrapper {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 40px;
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .welcome-message {
+            margin-bottom: 30px;
+        }
+        .welcome-message span {
+            font-weight: bold;
+            color: var(--light-text-color);
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            background-color: var(--accent-color);
+            color: var(--button-text-color);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .btn:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* --- Admin Dashboard Specific Styles --- */
         .submission-card {
             background-color: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -39,10 +114,19 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            margin-bottom: 10px;
         }
         .submission-header h3 {
             margin: 0;
             color: var(--light-text-color);
+            font-size: 1.2rem;
+        }
+        .submission-card p {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+        .submission-card p strong {
+             color: var(--light-text-color);
         }
         .submission-details {
             display: none; /* Hidden by default */
@@ -52,9 +136,13 @@
         }
         .detail-item {
             margin-bottom: 10px;
+            font-size: 0.9rem;
         }
         .detail-item strong {
             color: var(--accent-color);
+            display: block;
+            margin-bottom: 2px;
+            font-size: 1rem;
         }
         .status-updater {
             display: flex;
@@ -89,7 +177,7 @@
     <script type="module">
         import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus } from './assets/auth.js';
 
-        // --- Theme Management ---
+        // Simple theme check to style the page consistently
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
@@ -101,7 +189,6 @@
         const container = document.getElementById('submissions-container');
         const statusOptions = ["Under Review", "Awaiting Info", "In Progress", "Completed", "On Hold"];
 
-        // --- Function to fetch and display submissions ---
         async function displaySubmissions() {
             try {
                 const submissions = await getAllSubmissions();
@@ -110,25 +197,22 @@
                     return;
                 }
 
-                let contentHTML = '';
-                submissions.sort((a, b) => b.submittedAt?.toMillis() - a.submittedAt?.toMillis()); // Sort by newest first
+                submissions.sort((a, b) => (b.submittedAt?.toMillis() || 0) - (a.submittedAt?.toMillis() || 0));
 
-                submissions.forEach(sub => {
+                let contentHTML = submissions.map(sub => {
                     const submittedDate = sub.submittedAt?.toDate().toLocaleDateString() || 'N/A';
                     
-                    // Create dropdown for status update
-                    let optionsHTML = statusOptions.map(opt => 
+                    const optionsHTML = statusOptions.map(opt => 
                         `<option value="${opt}" ${sub.status === opt ? 'selected' : ''}>${opt}</option>`
                     ).join('');
 
-                    // Create list of all submission details
                     let detailsHTML = '';
                     for (const [key, value] of Object.entries(sub)) {
-                        if (['userId', 'userEmail', 'submittedAt'].includes(key)) continue; // Skip meta fields
-                        detailsHTML += `<div class="detail-item"><strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</div>`;
+                        if (['userId', 'userEmail', 'submittedAt', 'status'].includes(key)) continue;
+                        detailsHTML += `<div class="detail-item"><strong>${key.replace(/-/g, ' ')}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</div>`;
                     }
 
-                    contentHTML += `
+                    return `
                         <div class="submission-card" id="card-${sub.id}">
                             <div class="submission-header">
                                 <h3>${sub['business-name'] || 'No Business Name'}</h3>
@@ -139,12 +223,10 @@
                             </div>
                             <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
                             <button class="btn toggle-details-btn" data-id="${sub.id}">View Details</button>
-                            <div class="submission-details" id="details-${sub.id}">
-                                ${detailsHTML}
-                            </div>
+                            <div class="submission-details" id="details-${sub.id}">${detailsHTML}</div>
                         </div>
                     `;
-                });
+                }).join('');
 
                 container.innerHTML = contentHTML;
                 addEventListeners();
@@ -155,52 +237,50 @@
             }
         }
         
-        // --- Function to add event listeners to dynamic buttons ---
         function addEventListeners() {
-            document.querySelectorAll('.update-status-btn').forEach(button => {
-                button.addEventListener('click', async (e) => {
-                    const userId = e.target.dataset.id;
+            container.addEventListener('click', async (e) => {
+                const target = e.target;
+
+                // --- Handle status update ---
+                if (target.classList.contains('update-status-btn')) {
+                    const userId = target.dataset.id;
                     const select = document.getElementById(`status-select-${userId}`);
                     const newStatus = select.value;
                     
-                    e.target.textContent = 'Updating...';
-                    e.target.disabled = true;
+                    target.textContent = 'Updating...';
+                    target.disabled = true;
 
                     const success = await updateProjectStatus(userId, newStatus);
                     if (success) {
                         document.getElementById(`status-text-${userId}`).textContent = newStatus;
-                        alert('Status updated successfully!');
                     } else {
                         alert('Failed to update status.');
                     }
                     
-                    e.target.textContent = 'Update';
-                    e.target.disabled = false;
-                });
-            });
+                    target.textContent = 'Update';
+                    target.disabled = false;
+                }
 
-            document.querySelectorAll('.toggle-details-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const detailsId = `details-${e.target.dataset.id}`;
+                // --- Handle toggling details ---
+                if (target.classList.contains('toggle-details-btn')) {
+                    const detailsId = `details-${target.dataset.id}`;
                     const detailsDiv = document.getElementById(detailsId);
                     const isVisible = detailsDiv.style.display === 'block';
                     detailsDiv.style.display = isVisible ? 'none' : 'block';
-                    e.target.textContent = isVisible ? 'View Details' : 'Hide Details';
-                });
+                    target.textContent = isVisible ? 'View Details' : 'Hide Details';
+                }
             });
         }
 
-
-        // Protect this page and fetch data
         checkAuthState(user => {
             if (user && user.email === "developer@rs-digital.my") {
-                const userEmailElement = document.getElementById('user-email');
-                userEmailElement.textContent = user.email;
+                document.getElementById('user-email').textContent = user.email;
                 displaySubmissions();
             } else if (user) {
-                window.location.href = '/dashboard.html'; // It's a client, not admin
+                window.location.href = '/dashboard.html';
+            } else {
+                window.location.href = '/login.html';
             }
-            // Else, checkAuthState handles redirect to login
         });
     </script>
 </body>
