@@ -61,7 +61,13 @@
         .submission-card p strong { color: var(--light-text-color); }
         .submission-details { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .detail-item { margin-bottom: 15px; font-size: 0.9rem; line-height: 1.5; }
-        .detail-item strong { color: var(--accent-color); display: block; margin-bottom: 4px; font-size: 1rem; text-transform: capitalize; }
+        .detail-item strong {
+            color: var(--accent-color);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 1rem;
+            /* UPDATED: The problematic text-transform line has been removed */
+        }
         .status-updater { display: flex; align-items: center; gap: 10px; }
         .status-updater select { padding: 8px; background-color: var(--bg-color); color: var(--heading-color); border: 1px solid var(--border-color); border-radius: 5px; }
     </style>
@@ -91,7 +97,6 @@
         const container = document.getElementById('submissions-container');
         const statusOptions = ["Under Review", "Awaiting Info", "In Progress", "Completed", "On Hold"];
 
-        // **NEW:** A map to convert field names to proper labels
         const labelMap = {
           'business-name': 'Business Name',
           'business-desc': 'Business Description',
@@ -131,13 +136,10 @@
 
                     let detailsHTML = '';
                     for (const [key, value] of Object.entries(sub)) {
-                        // Skip fields we don't want to display here
                         if (['userId', 'userEmail', 'submittedAt', 'status'].includes(key)) continue;
 
-                        // **UPDATED:** Use the labelMap to get a readable label
                         const label = labelMap[key] || key.replace(/-/g, ' ');
 
-                        // Don't show a detail item if the value is empty
                         if (value && value.length > 0) {
                             detailsHTML += `<div class="detail-item"><strong>${label}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</div>`;
                         }
@@ -169,7 +171,6 @@
         }
         
         function addEventListeners() {
-            // This function remains the same
             container.addEventListener('click', async (e) => {
                 const target = e.target;
                 if (target.classList.contains('update-status-btn')) {
@@ -179,7 +180,7 @@
                     target.textContent = 'Updating...';
                     target.disabled = true;
                     const success = await updateProjectStatus(userId, newStatus);
-                    if (success) { document.getElementById(`status-text-${userId}`).textContent = newStatus; }
+                    if (success) { document.getElementById(`status-text-${userId}`).textContent = newStatus; } else { alert('Failed to update status.'); }
                     target.textContent = 'Update';
                     target.disabled = false;
                 }
@@ -194,7 +195,6 @@
         }
 
         checkAuthState(user => {
-            // This function remains the same
             if (user && user.email === "developer@rs-digital.my") {
                 document.getElementById('user-email').textContent = user.email;
                 displaySubmissions();
