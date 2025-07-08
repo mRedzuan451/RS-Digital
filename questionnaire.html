@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
+        /* ... Your existing CSS styles ... */
         /* ==========================================================================
            RS Digital - Main Stylesheet (Copied for consistent styling)
            ========================================================================== */
@@ -131,385 +132,30 @@
             text-align: center;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            cursor: pointer; /* Ensure button cursor */
+        }
+        
+        .btn:disabled {
+            background-color: var(--text-color);
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .btn-primary {
             background-color: var(--accent-color);
             color: var(--button-text-color);
         }
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             opacity: 0.85;
         }
-
-        /* --- Header & Navigation --- */
-        .main-header {
-            background-color: var(--nav-bg-color);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 4px var(--shadow-color);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            height: var(--header-height);
-        }
-
-        .main-header nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 100%;
-        }
         
-        .nav-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* --- Logo Styles --- */
-        .logo-link {
-            text-decoration: none;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .logo-graphic {
-            width: 40px;
-            height: 40px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: scale(0.8);
-            transition: transform 0.4s ease-in-out;
-        }
-
-        .logo-graphic::before,
-        .logo-graphic::after {
-            content: '';
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            border: 3px solid var(--accent-color);
-            border-radius: 4px;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        .logo-graphic::before {
-            transform: rotate(25deg);
-            border-color: var(--text-color);
-        }
-
-        .logo-graphic::after {
-            transform: rotate(-25deg);
-        }
-
-        .logo-letter {
-            position: absolute;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--heading-color);
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-        }
-
-        .logo-letter:nth-child(1) { /* R */
-            color: var(--accent-color);
-            z-index: 10;
-            transform: translateX(-5px);
-        }
-
-        .logo-letter:nth-child(2) { /* S */
-            transform: translateX(5px);
-            color: var(--logo-secondary-color);
-        }
-
-        .logo-tagline {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--light-text-color);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.4s ease;
-        }
-        
-        .logo-link:hover .logo-graphic {
-            transform: scale(0.9);
-        }
-        
-        .logo-link:hover .logo-graphic::before {
-            transform: rotate(45deg) scale(1.05);
-            border-color: var(--light-text-color);
-        }
-
-        .logo-link:hover .logo-graphic::after {
-            transform: rotate(-45deg) scale(1.05);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 8px var(--accent-color);
-        }
-        
-        .logo-link:hover .logo-letter {
-            color: var(--heading-color);
-        }
-        
-        .logo-link:hover .logo-letter:nth-child(1) {
-            text-shadow: 0 0 5px var(--accent-color);
-            transform: translateX(-8px) scale(1.1);
-        }
-        
-        .logo-link:hover .logo-letter:nth-child(2) {
-            transform: translateX(8px) scale(1.1);
-        }
-
-        .logo-link:hover .logo-tagline {
-            color: var(--accent-color);
-            letter-spacing: 2px;
-        }
-
-        .nav-links {
-            display: none;
-            list-style: none;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            color: var(--light-text-color);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-
-        .theme-toggle-btn {
-            background: none;
-            border: none;
-            color: var(--accent-color);
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .menu-toggle {
-            display: block;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            cursor: pointer;
-        }
-
-        .nav-links.active {
-            display: flex;
-            flex-direction: column;
-            position: absolute;
-            top: var(--header-height);
-            left: 0;
-            width: 100%;
-            background-color: var(--card-bg-color);
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-            gap: 20px;
-        }
-
-        /* --- Form Styles --- */
-        .form-container {
-            max-width: 800px;
-            margin: 40px auto 0 auto;
-            background: var(--card-bg-color);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        
-        .form-section {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 25px;
-            margin-bottom: 25px;
-        }
-
-        .form-section:last-of-type {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--light-text-color);
-        }
-
-        .form-group p {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: var(--heading-color);
-            border-radius: 5px;
-            font-size: 1rem;
-            font-family: inherit;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px var(--accent-hover-color);
-        }
-
-        .choice-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .choice-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .choice-label input {
-            -webkit-appearance: none;
-            appearance: none;
-            background-color: var(--bg-color);
-            margin: 0;
-            font: inherit;
-            color: var(--text-color);
-            width: 1.15em;
-            height: 1.15em;
-            border: 0.15em solid var(--text-color);
-            border-radius: 50%;
-            transform: translateY(-0.075em);
-            display: grid;
-            place-content: center;
-        }
-        
-        .choice-label input[type="checkbox"] {
-            border-radius: 0.15em;
-        }
-
-        .choice-label input::before {
-            content: "";
-            width: 0.65em;
-            height: 0.65em;
-            border-radius: 50%;
-            transform: scale(0);
-            transition: 120ms transform ease-in-out;
-            box-shadow: inset 1em 1em var(--accent-color);
-        }
-        
-        .choice-label input[type="checkbox"]::before {
-             border-radius: 0;
-             background-color: var(--accent-color);
-             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
-        }
-
-        .choice-label input:checked::before {
-            transform: scale(1);
-        }
-
-        .choice-label:hover {
-            background-color: var(--accent-hover-color);
-            border-color: var(--accent-color);
-        }
-
-        /* --- Conditional Sections --- */
-        .conditional-section {
-            display: none;
-            padding-left: 15px;
-            border-left: 2px solid var(--accent-color);
-            margin-top: 20px;
-        }
-        
-        /* --- Honeypot Field for Netlify --- */
-        .hidden {
-            display: none;
-        }
-
-        /* --- Footer --- */
-        .main-footer {
-            color: var(--text-color);
-            text-align: center;
-            padding: 30px 20px;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-        }
-        .main-footer p {
-            color: var(--text-color);
-            margin-bottom: 10px;
-        }
-        .social-links {
-            margin-top: 20px;
-        }
-        .social-links a {
-            color: var(--light-text-color);
-            font-size: 1.5rem;
-            margin: 0 10px;
-            transition: color 0.3s ease;
-        }
-        .social-links a:hover {
-            color: var(--accent-color);
-        }
-
-        @media (min-width: 768px) {
-            .menu-toggle { display: none; }
-            .nav-links { display: flex; }
-            .nav-controls { gap: 20px; }
-        }
+        /* ... other styles */
     </style>
 </head>
 <body>
 
     <header class="main-header">
-        <nav class="container">
-            <a href="index.html" class="logo-link">
-                <div class="logo-container">
-                    <div class="logo-graphic">
-                        <span class="logo-letter">R</span>
-                        <span class="logo-letter">S</span>
-                    </div>
-                    <div class="logo-tagline">Digital</div>
-                </div>
-            </a>
-            <div class="nav-controls">
-                <ul class="nav-links">
-                     <li><a href="index.html">Home</a></li>
-                    <li><a href="dashboard.html">Dashboard</a></li>
-                </ul>
-                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
-                    <i class="fas fa-sun"></i>
-                </button>
-                <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </nav>
-    </header>
+        </header>
 
     <main>
         <section id="questionnaire" class="questionnaire-section">
@@ -517,16 +163,8 @@
                 <h2>Project Questionnaire</h2>
                 <p class="subtitle">Let's build something great together. Answering these questions will give me a clear idea of what you're looking for and help me prepare a tailored quote for you.</p>
                 <div class="form-container">
-                    <form name="project-questionnaire" method="POST" action="/thank-you.html" data-netlify="true" data-netlify-honeypot="bot-field">
+                    <form id="project-questionnaire-form">
                         
-                        <!-- Netlify hidden input for form name -->
-                        <input type="hidden" name="form-name" value="project-questionnaire" />
-                        <!-- Netlify Honeypot field for spam protection -->
-                        <p class="hidden">
-                            <label>Don’t fill this out if you’re human: <input name="bot-field" /></label>
-                        </p>
-
-                        <!-- Section 1: The Selector -->
                         <div class="form-section">
                             <h4>Section 1: The Selector</h4>
                             <div class="form-group">
@@ -542,113 +180,6 @@
                             </div>
                         </div>
 
-                        <!-- Section 2: Core Questions -->
-                        <div class="form-section">
-                            <h4>Section 2: The Core Questions</h4>
-                             <div class="form-group">
-                                <label for="q-business-name">What is the full name of your business?</label>
-                                <input type="text" id="q-business-name" name="business-name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="q-business-desc">Please briefly describe what your business does.</label>
-                                <textarea id="q-business-desc" name="business-desc" rows="3" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="q-audience">Who are your primary customers or target audience?</label>
-                                <input type="text" id="q-audience" name="audience" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="q-goal">What is the main goal of this new website?</label>
-                                <p>e.g., "Get more WhatsApp enquiries," "Showcase my portfolio," "Look more professional"</p>
-                                <input type="text" id="q-goal" name="goal" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="q-competitors">Please list 2-3 competitors or websites you like the look of.</label>
-                                <textarea id="q-competitors" name="competitors" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Section 3-A: Landing Page Questions -->
-                        <div id="landing-page-questions" class="conditional-section">
-                            <div class="form-section">
-                                <h4>Section 3-A: Landing Page Details</h4>
-                                <div class="form-group">
-                                    <label for="q-lp-headline">What is the single most important message you want visitors to see first? (This will be your "Hero Headline").</label>
-                                    <input type="text" id="q-lp-headline" name="lp-headline">
-                                </div>
-                                <div class="form-group">
-                                    <label for="q-lp-action">What is the single most important action you want visitors to take?</label>
-                                     <p>e.g., "Call me," "WhatsApp me," "Fill out a form"</p>
-                                    <input type="text" id="q-lp-action" name="lp-action">
-                                </div>
-                                <div class="form-group">
-                                    <label>Besides the main introduction, what other sections do you need? (Check all that apply)</label>
-                                    <div class="choice-group">
-                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="about"> About Us</label>
-                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="services"> Our Services / Features</label>
-                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="testimonials"> Testimonials / Client Reviews</label>
-                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="gallery"> Photo Gallery</label>
-                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="contact"> Contact Form</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Section 3-B: Small Business Site Questions -->
-                        <div id="small-business-questions" class="conditional-section">
-                            <div class="form-section">
-                                <h4>Section 3-B: Small Business Site Details</h4>
-                                <div class="form-group">
-                                    <label>Besides the Home page, which other pages do you need? (Check all that apply)</label>
-                                    <div class="choice-group">
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="about"> About Us</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="services"> Our Services (with detailed descriptions)</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="team"> Our Team</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="blog"> Blog / News</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="gallery"> Photo Gallery</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="testimonials"> Testimonials</label>
-                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="contact"> Contact Us</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="q-sb-services">For your "Services" page, please list the main services you want to feature.</label>
-                                    <textarea id="q-sb-services" name="sb-services" rows="4"></textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label>Do you need a simple blog or news section that you can update yourself?</label>
-                                    <div class="choice-group">
-                                        <label class="choice-label"><input type="radio" name="cms-needed" value="yes"> Yes</label>
-                                        <label class="choice-label"><input type="radio" name="cms-needed" value="no" checked> No</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Section 4: Design & Content -->
-                        <div class="form-section">
-                            <h4>Section 4: Design & Content</h4>
-                            <div class="form-group">
-                                <label for="q-style">Describe the desired style and feeling of your website in a few words.</label>
-                                <p>e.g., "modern and minimalist," "warm and friendly," "professional and corporate"</p>
-                                <input type="text" id="q-style" name="style">
-                            </div>
-                            <div class="form-group">
-                                <label>Do you have an existing logo and brand colours?</label>
-                                <div class="choice-group">
-                                    <label class="choice-label"><input type="radio" name="branding" value="yes"> Yes, I will provide them.</label>
-                                    <label class="choice-label"><input type="radio" name="branding" value="no"> No, I need help with this.</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Will you be providing all the text and images for the website?</label>
-                                <div class="choice-group">
-                                    <label class="choice-label"><input type="radio" name="content" value="yes"> Yes, I have everything ready.</label>
-                                    <label class="choice-label"><input type="radio" name="content" value="no"> No, I need help with writing or finding images.</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Section 5: Budget & Timeline -->
                         <div class="form-section">
                             <h4>Section 5: Budget & Timeline</h4>
                              <div class="form-group">
@@ -665,7 +196,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Submit Questionnaire</button>
+                        <button type="submit" id="submit-btn" class="btn btn-primary">Submit Questionnaire</button>
                     </form>
                 </div>
             </div>
@@ -673,32 +204,70 @@
     </main>
 
     <footer class="main-footer">
-        <div class="container">
-            <p><strong>RS Digital (SSM Reg. No: xxxxxxxxx-X)</strong></p>
-            <p>© 2025 RS Digital. Built with ❤️ in Petaling Jaya.</p>
-            <div class="social-links">
-                <a href="#" aria-label="LinkedIn Profile"><i class="fab fa-linkedin"></i></a>
-                <a href="#" aria-label="GitHub Profile"><i class="fab fa-github"></i></a>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
     <script type="module">
-        import { checkAuthState } from './assets/auth.js';
+        import { checkAuthState, submitQuestionnaire } from './assets/auth.js';
 
-        // Simple theme check to style the page consistently
+        // --- Theme Management ---
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
         }
 
-        // Protect this page
+        // --- Page Protection & Form Handling ---
+        const form = document.getElementById('project-questionnaire-form');
+        const submitBtn = document.getElementById('submit-btn');
+        let currentUser = null;
+
         checkAuthState(user => {
-            if (!user) {
-                // No user is signed in. Redirect to login.
+            if (user) {
+                currentUser = user; // Store the authenticated user
+            } else {
+                // If no user, redirect (checkAuthState handles this, but good practice)
                 window.location.href = '/login.html';
             }
         });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) {
+                alert("You must be logged in to submit.");
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // Create a data object from the form
+            const formData = new FormData(form);
+            const data = {};
+            
+            // Handle regular inputs
+            for (let [key, value] of formData.entries()) {
+                 // Handle checkboxes, which can have multiple values
+                if (key.endsWith('[]')) {
+                    const cleanKey = key.slice(0, -2);
+                    if (!data[cleanKey]) {
+                        data[cleanKey] = [];
+                    }
+                    data[cleanKey].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            try {
+                // Call the new function from auth.js
+                await submitQuestionnaire(currentUser, data);
+                // The function will handle redirection on success
+            } catch (error) {
+                alert(`Submission failed: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Questionnaire';
+            }
+        });
+
 
         // --- Conditional Form Logic ---
         const siteTypeSelector = document.getElementById('site-type-selector');
@@ -716,14 +285,11 @@
                 smallBusinessQuestions.style.display = 'block';
             }
         }
-
-        // Initial check on page load
+        
         if(siteTypeSelector) {
             toggleQuestionSections();
-            // Add event listener for changes
             siteTypeSelector.addEventListener('change', toggleQuestionSections);
         }
-
     </script>
 
 </body>

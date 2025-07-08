@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* This is a simplified version of your main CSS for consistency */
+        /* ... Your existing CSS ... */
         :root {
             --bg-color: #0a192f;
             --card-bg-color: #112240;
@@ -25,91 +25,48 @@
             --font-family: 'Poppins', sans-serif;
         }
 
-        body.light-mode {
-            --bg-color: #F7F9FC;
-            --card-bg-color: #FFFFFF;
-            --border-color: #e0e0e0;
-            --heading-color: #1A2A4C;
-            --text-color: #555555;
-            --light-text-color: #333333;
-            --accent-color: #007BFF;
-            --button-text-color: #FFFFFF;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: var(--font-family);
-            color: var(--text-color);
+        /* NEW STYLES FOR ADMIN DASHBOARD */
+        .submission-card {
             background-color: var(--bg-color);
-            background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
-            background-size: cover;
-            background-position: center center;
-            background-attachment: fixed;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
             padding: 20px;
         }
-        body.light-mode {
-             background-image: url('assets/light-background.jpg');
-        }
-        .dashboard-wrapper {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 40px;
-            background-color: var(--card-bg-color);
-            border-radius: 8px;
-        }
-        .dashboard-header {
+        .submission-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
-        h1 {
-            color: var(--heading-color);
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-decoration: none;
-            background-color: var(--accent-color);
-            color: var(--button-text-color);
-            transition: opacity 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .btn:hover {
-            opacity: 0.85;
-        }
-        .welcome-message {
-            margin-bottom: 30px;
-        }
-        .welcome-message span {
-            font-weight: bold;
+        .submission-header h3 {
+            margin: 0;
             color: var(--light-text-color);
         }
-        .dashboard-content {
-            text-align: left;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .submission-details {
+            display: none; /* Hidden by default */
             margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
         }
-        th, td {
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            text-align: left;
+        .detail-item {
+            margin-bottom: 10px;
         }
-        th {
+        .detail-item strong {
+            color: var(--accent-color);
+        }
+        .status-updater {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-updater select {
+            padding: 8px;
             background-color: var(--bg-color);
             color: var(--heading-color);
-        }
-        td {
-            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -123,17 +80,16 @@
         <div class="dashboard-content">
             <p class="welcome-message">Welcome, <span id="user-email">Admin</span>!</p>
             <h2>Project Submissions</h2>
-            <div id="submissions-table-container">
+            <div id="submissions-container">
                 <p>Loading submissions...</p>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { handleLogout, checkAuthState, db } from './assets/auth.js';
-        import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus } from './assets/auth.js';
 
-        // Simple theme check to style the page consistently
+        // --- Theme Management ---
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
@@ -142,64 +98,109 @@
         const logoutButton = document.getElementById('logout-button');
         logoutButton.addEventListener('click', handleLogout);
 
+        const container = document.getElementById('submissions-container');
+        const statusOptions = ["Under Review", "Awaiting Info", "In Progress", "Completed", "On Hold"];
+
         // --- Function to fetch and display submissions ---
         async function displaySubmissions() {
-            const container = document.getElementById('submissions-table-container');
             try {
-                const querySnapshot = await getDocs(collection(db, "project-questionnaire"));
-                if (querySnapshot.empty) {
+                const submissions = await getAllSubmissions();
+                if (submissions.length === 0) {
                     container.innerHTML = '<p>No submissions yet.</p>';
                     return;
                 }
 
-                let tableHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Business Name</th>
-                                <th>Email</th>
-                                <th>Project Type</th>
-                                <th>Budget</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const submissionDate = data.timestamp?.toDate().toLocaleDateString() || 'N/A';
-                    tableHTML += `
-                        <tr>
-                            <td>${submissionDate}</td>
-                            <td>${data['business-name'] || 'N/A'}</td>
-                            <td>${data.email || 'N/A'}</td>
-                            <td>${data['site-type'] || 'N/A'}</td>
-                            <td>${data.budget || 'N/A'}</td>
-                        </tr>
+                let contentHTML = '';
+                submissions.sort((a, b) => b.submittedAt?.toMillis() - a.submittedAt?.toMillis()); // Sort by newest first
+
+                submissions.forEach(sub => {
+                    const submittedDate = sub.submittedAt?.toDate().toLocaleDateString() || 'N/A';
+                    
+                    // Create dropdown for status update
+                    let optionsHTML = statusOptions.map(opt => 
+                        `<option value="${opt}" ${sub.status === opt ? 'selected' : ''}>${opt}</option>`
+                    ).join('');
+
+                    // Create list of all submission details
+                    let detailsHTML = '';
+                    for (const [key, value] of Object.entries(sub)) {
+                        if (['userId', 'userEmail', 'submittedAt'].includes(key)) continue; // Skip meta fields
+                        detailsHTML += `<div class="detail-item"><strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</div>`;
+                    }
+
+                    contentHTML += `
+                        <div class="submission-card" id="card-${sub.id}">
+                            <div class="submission-header">
+                                <h3>${sub['business-name'] || 'No Business Name'}</h3>
+                                <div class="status-updater">
+                                    <select id="status-select-${sub.id}">${optionsHTML}</select>
+                                    <button class="btn update-status-btn" data-id="${sub.id}">Update</button>
+                                </div>
+                            </div>
+                            <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
+                            <button class="btn toggle-details-btn" data-id="${sub.id}">View Details</button>
+                            <div class="submission-details" id="details-${sub.id}">
+                                ${detailsHTML}
+                            </div>
+                        </div>
                     `;
                 });
 
-                tableHTML += `</tbody></table>`;
-                container.innerHTML = tableHTML;
+                container.innerHTML = contentHTML;
+                addEventListeners();
 
             } catch (error) {
                 console.error("Error fetching submissions: ", error);
                 container.innerHTML = '<p>Could not load submissions. Please try again later.</p>';
             }
         }
+        
+        // --- Function to add event listeners to dynamic buttons ---
+        function addEventListeners() {
+            document.querySelectorAll('.update-status-btn').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const userId = e.target.dataset.id;
+                    const select = document.getElementById(`status-select-${userId}`);
+                    const newStatus = select.value;
+                    
+                    e.target.textContent = 'Updating...';
+                    e.target.disabled = true;
+
+                    const success = await updateProjectStatus(userId, newStatus);
+                    if (success) {
+                        document.getElementById(`status-text-${userId}`).textContent = newStatus;
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Failed to update status.');
+                    }
+                    
+                    e.target.textContent = 'Update';
+                    e.target.disabled = false;
+                });
+            });
+
+            document.querySelectorAll('.toggle-details-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const detailsId = `details-${e.target.dataset.id}`;
+                    const detailsDiv = document.getElementById(detailsId);
+                    const isVisible = detailsDiv.style.display === 'block';
+                    detailsDiv.style.display = isVisible ? 'none' : 'block';
+                    e.target.textContent = isVisible ? 'View Details' : 'Hide Details';
+                });
+            });
+        }
+
 
         // Protect this page and fetch data
         checkAuthState(user => {
-            if (user) {
-                // User is signed in.
+            if (user && user.email === "developer@rs-digital.my") {
                 const userEmailElement = document.getElementById('user-email');
                 userEmailElement.textContent = user.email;
-                displaySubmissions(); // Fetch data now that we know user is logged in
-            } else {
-                // No user is signed in. Redirect to login.
-                window.location.href = '/login.html';
+                displaySubmissions();
+            } else if (user) {
+                window.location.href = '/dashboard.html'; // It's a client, not admin
             }
+            // Else, checkAuthState handles redirect to login
         });
     </script>
 </body>
