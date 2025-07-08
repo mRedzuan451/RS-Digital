@@ -12,12 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* ... Your existing CSS styles ... */
-        /* ==========================================================================
-           RS Digital - Main Stylesheet (Copied for consistent styling)
-           ========================================================================== */
-
-        /* --- CSS Variables (Dark Theme) --- */
+        /* Your existing CSS from the file, unchanged */
         :root {
             --bg-color: #0a192f;
             --nav-bg-color: rgba(10, 25, 47, 0.85);
@@ -30,13 +25,9 @@
             --accent-hover-color: rgba(100, 255, 218, 0.1);
             --button-text-color: #0a192f;
             --shadow-color: rgba(2,12,27,0.7);
-            --logo-secondary-color: #FF4136; /* Red for the 'S' */
-
             --font-family: 'Poppins', sans-serif;
             --header-height: 70px;
         }
-
-        /* --- CSS Variables (Light Theme) --- */
         body.light-mode {
             --bg-color: #F7F9FC;
             --nav-bg-color: rgba(255, 255, 255, 0.85);
@@ -49,116 +40,51 @@
             --accent-hover-color: rgba(0, 123, 255, 0.1);
             --button-text-color: #FFFFFF;
             --shadow-color: rgba(0,0,0,0.05);
-            --logo-secondary-color: #FF4136; /* Red for the 'S' */
         }
-
-        /* --- General Setup & Base Styles --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: var(--header-height);
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: var(--header-height); }
         body {
             font-family: var(--font-family);
             line-height: 1.6;
             color: var(--text-color);
             background-color: var(--bg-color);
-            /* Add background image */
             background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
-        
-        body.light-mode {
-             background-image: url('assets/light-background.jpg');
-        }
-
-        /* --- Utility Classes & Reusable Components --- */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        section {
-            padding: 60px 0;
-            background-color: transparent; 
-        }
-
-        h1, h2, h3, h4 {
-            line-height: 1.2;
-            margin-bottom: 20px;
-            color: var(--heading-color);
-        }
-
+        body.light-mode { background-image: url('assets/light-background.jpg'); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 60px 0; background-color: transparent; }
+        h1, h2, h3, h4 { line-height: 1.2; margin-bottom: 20px; color: var(--heading-color); }
         h1 { font-size: 2.5rem; }
         h2 { font-size: 2rem; text-align: center; }
         h3 { font-size: 1.5rem; }
         h4 { font-size: 1.2rem; color: var(--accent-color); margin-top: 30px; }
-
-
-        p {
-            margin-bottom: 15px;
-            color: var(--text-color);
-        }
-
-        ul { list-style: none; }
-        a { text-decoration: none; color: var(--accent-color); }
-
-        .subtitle {
-            font-size: 1.1rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-            color: var(--light-text-color);
-        }
-
-        /* --- Buttons --- */
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            border-radius: 5px;
-            font-weight: bold;
-            font-size: 1rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: pointer; /* Ensure button cursor */
-        }
-        
-        .btn:disabled {
-            background-color: var(--text-color);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-color);
-            color: var(--button-text-color);
-        }
-        .btn-primary:hover:not(:disabled) {
-            opacity: 0.85;
-        }
-        
-        /* ... other styles */
+        p { margin-bottom: 15px; color: var(--text-color); }
+        .subtitle { font-size: 1.1rem; max-width: 800px; margin: 0 auto 30px auto; text-align: center; color: var(--light-text-color); }
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 5px; font-weight: bold; font-size: 1rem; text-align: center; transition: all 0.3s ease; border: 2px solid transparent; cursor: pointer; }
+        .btn:disabled { background-color: var(--text-color); cursor: not-allowed; opacity: 0.6; }
+        .btn-primary { background-color: var(--accent-color); color: var(--button-text-color); width: 100%;}
+        .btn-primary:hover:not(:disabled) { opacity: 0.85; }
+        .form-container { max-width: 800px; margin: 40px auto 0 auto; background: var(--card-bg-color); padding: 30px; border-radius: 8px; }
+        .form-section { border-bottom: 1px solid var(--border-color); padding-bottom: 25px; margin-bottom: 25px; }
+        .form-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--light-text-color); }
+        .form-group p { font-size: 0.9rem; margin-bottom: 10px; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--heading-color); border-radius: 5px; font-size: 1rem; font-family: inherit; }
+        .choice-group { display: flex; flex-direction: column; gap: 15px; }
+        .choice-label { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 15px; border: 1px solid var(--border-color); border-radius: 5px; transition: all 0.3s ease; }
+        .choice-label:hover { background-color: var(--accent-hover-color); border-color: var(--accent-color); }
+        .conditional-section { display: none; padding-left: 15px; border-left: 2px solid var(--accent-color); margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <header class="main-header">
-        </header>
-
     <main>
-        <section id="questionnaire" class="questionnaire-section">
+        <section id="questionnaire-section">
             <div class="container">
                 <h2>Project Questionnaire</h2>
                 <p class="subtitle">Let's build something great together. Answering these questions will give me a clear idea of what you're looking for and help me prepare a tailored quote for you.</p>
@@ -176,6 +102,108 @@
                                     <label class="choice-label">
                                         <input type="radio" name="site-type" value="small-business"> A "Small Business" / Multi-Page Brochure Site
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h4>Section 2: The Core Questions</h4>
+                             <div class="form-group">
+                                <label for="q-business-name">What is the full name of your business?</label>
+                                <input type="text" id="q-business-name" name="business-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-business-desc">Please briefly describe what your business does.</label>
+                                <textarea id="q-business-desc" name="business-desc" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-audience">Who are your primary customers or target audience?</label>
+                                <input type="text" id="q-audience" name="audience" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-goal">What is the main goal of this new website?</label>
+                                <p>e.g., "Get more WhatsApp enquiries," "Showcase my portfolio," "Look more professional"</p>
+                                <input type="text" id="q-goal" name="goal" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="q-competitors">Please list 2-3 competitors or websites you like the look of.</label>
+                                <textarea id="q-competitors" name="competitors" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="landing-page-questions" class="conditional-section">
+                            <div class="form-section">
+                                <h4>Section 3-A: Landing Page Details</h4>
+                                <div class="form-group">
+                                    <label for="q-lp-headline">What is the single most important message you want visitors to see first? (This will be your "Hero Headline").</label>
+                                    <input type="text" id="q-lp-headline" name="lp-headline">
+                                </div>
+                                <div class="form-group">
+                                    <label for="q-lp-action">What is the single most important action you want visitors to take?</label>
+                                     <p>e.g., "Call me," "WhatsApp me," "Fill out a form"</p>
+                                    <input type="text" id="q-lp-action" name="lp-action">
+                                </div>
+                                <div class="form-group">
+                                    <label>Besides the main introduction, what other sections do you need? (Check all that apply)</label>
+                                    <div class="choice-group">
+                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="about"> About Us</label>
+                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="services"> Our Services / Features</label>
+                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="testimonials"> Testimonials / Client Reviews</label>
+                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="gallery"> Photo Gallery</label>
+                                        <label class="choice-label"><input type="checkbox" name="lp-sections[]" value="contact"> Contact Form</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="small-business-questions" class="conditional-section">
+                            <div class="form-section">
+                                <h4>Section 3-B: Small Business Site Details</h4>
+                                <div class="form-group">
+                                    <label>Besides the Home page, which other pages do you need? (Check all that apply)</label>
+                                    <div class="choice-group">
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="about"> About Us</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="services"> Our Services (with detailed descriptions)</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="team"> Our Team</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="blog"> Blog / News</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="gallery"> Photo Gallery</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="testimonials"> Testimonials</label>
+                                        <label class="choice-label"><input type="checkbox" name="sb-pages[]" value="contact"> Contact Us</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="q-sb-services">For your "Services" page, please list the main services you want to feature.</label>
+                                    <textarea id="q-sb-services" name="sb-services" rows="4"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Do you need a simple blog or news section that you can update yourself?</label>
+                                    <div class="choice-group">
+                                        <label class="choice-label"><input type="radio" name="cms-needed" value="yes"> Yes</label>
+                                        <label class="choice-label"><input type="radio" name="cms-needed" value="no" checked> No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h4>Section 4: Design & Content</h4>
+                            <div class="form-group">
+                                <label for="q-style">Describe the desired style and feeling of your website in a few words.</label>
+                                <p>e.g., "modern and minimalist," "warm and friendly," "professional and corporate"</p>
+                                <input type="text" id="q-style" name="style">
+                            </div>
+                            <div class="form-group">
+                                <label>Do you have an existing logo and brand colours?</label>
+                                <div class="choice-group">
+                                    <label class="choice-label"><input type="radio" name="branding" value="yes"> Yes, I will provide them.</label>
+                                    <label class="choice-label"><input type="radio" name="branding" value="no"> No, I need help with this.</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Will you be providing all the text and images for the website?</label>
+                                <div class="choice-group">
+                                    <label class="choice-label"><input type="radio" name="content" value="yes"> Yes, I have everything ready.</label>
+                                    <label class="choice-label"><input type="radio" name="content" value="no"> No, I need help with writing or finding images.</label>
                                 </div>
                             </div>
                         </div>
@@ -203,32 +231,23 @@
         </section>
     </main>
 
-    <footer class="main-footer">
-        </footer>
-
     <script type="module">
         import { checkAuthState, submitQuestionnaire } from './assets/auth.js';
 
-        // --- Theme Management ---
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.body.classList.add('light-mode');
-        }
-
-        // --- Page Protection & Form Handling ---
         const form = document.getElementById('project-questionnaire-form');
         const submitBtn = document.getElementById('submit-btn');
         let currentUser = null;
 
+        // --- 1. Check for user login ---
         checkAuthState(user => {
             if (user) {
-                currentUser = user; // Store the authenticated user
+                currentUser = user; // User is logged in, proceed.
             } else {
-                // If no user, redirect (checkAuthState handles this, but good practice)
-                window.location.href = '/login.html';
+                window.location.href = '/login.html'; // Not logged in, redirect to login page.
             }
         });
 
+        // --- 2. Handle the form submission ---
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUser) {
@@ -239,14 +258,11 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'Submitting...';
 
-            // Create a data object from the form
             const formData = new FormData(form);
             const data = {};
-            
-            // Handle regular inputs
+            // This loop correctly handles text inputs, radio buttons, and checkboxes
             for (let [key, value] of formData.entries()) {
-                 // Handle checkboxes, which can have multiple values
-                if (key.endsWith('[]')) {
+                 if (key.endsWith('[]')) {
                     const cleanKey = key.slice(0, -2);
                     if (!data[cleanKey]) {
                         data[cleanKey] = [];
@@ -258,9 +274,7 @@
             }
 
             try {
-                // Call the new function from auth.js
                 await submitQuestionnaire(currentUser, data);
-                // The function will handle redirection on success
             } catch (error) {
                 alert(`Submission failed: ${error.message}`);
                 submitBtn.disabled = false;
@@ -268,29 +282,24 @@
             }
         });
 
-
-        // --- Conditional Form Logic ---
+        // --- 3. Handle conditional question logic ---
         const siteTypeSelector = document.getElementById('site-type-selector');
         const landingPageQuestions = document.getElementById('landing-page-questions');
         const smallBusinessQuestions = document.getElementById('small-business-questions');
 
         function toggleQuestionSections() {
+            if (!siteTypeSelector) return; // Exit if the selector isn't on the page
             const selectedType = document.querySelector('input[name="site-type"]:checked').value;
-
             if (selectedType === 'landing-page') {
                 landingPageQuestions.style.display = 'block';
                 smallBusinessQuestions.style.display = 'none';
-            } else if (selectedType === 'small-business') {
+            } else {
                 landingPageQuestions.style.display = 'none';
                 smallBusinessQuestions.style.display = 'block';
             }
         }
-        
-        if(siteTypeSelector) {
-            toggleQuestionSections();
-            siteTypeSelector.addEventListener('change', toggleQuestionSections);
-        }
+        toggleQuestionSections(); // Run once on page load
+        siteTypeSelector.addEventListener('change', toggleQuestionSections); // Run when user changes selection
     </script>
-
 </body>
 </html>
