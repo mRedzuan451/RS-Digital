@@ -1,17 +1,16 @@
-// UPDATED: Import the new v2 function types
+// UPDATED: We now import 'config' directly to avoid conflicts
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { logger } = require("firebase-functions");
+const { logger, config } = require("firebase-functions");
 
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
-// Get email credentials from Firebase configuration (this part remains the same)
-const gmailEmail = process.env.NODEMAILER_EMAIL;
-const gmailPassword = process.env.NODEMAILER_PASSWORD;
+// This part now uses the directly imported 'config'
+const gmailEmail = config().nodemailer.email;
+const gmailPassword = config().nodemailer.password;
 
-// Set up the email transporter
 const mailTransport = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -20,22 +19,18 @@ const mailTransport = nodemailer.createTransport({
   },
 });
 
-// UPDATED: This is the new v2 syntax for a Firestore trigger
 exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", (event) => {
-  // The data snapshot is now located in event.data
   const snap = event.data;
   if (!snap) {
     logger.log("No data associated with the event");
     return;
   }
 
-  // Get the data from the new document
   const submissionData = snap.data();
 
-  // Define the email content
   const mailOptions = {
     from: `"RS Digital Bot" <${gmailEmail}>`,
-    to: "developer@rs-digital.my", // Your developer email
+    to: "developer@rs-digital.my",
     subject: `New Project Submission: ${submissionData["business-name"]}`,
     html: `
         <h1>New Project Questionnaire Submission</h1>
@@ -56,7 +51,6 @@ exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", 
     `,
   };
 
-  // Send the email and log the result
   logger.log(`Sending email for new submission by ${submissionData.userEmail}...`);
   return mailTransport.sendMail(mailOptions)
       .then(() => logger.log("New submission email sent successfully!"))
