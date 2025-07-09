@@ -1,53 +1,48 @@
-// UPDATED: We now import 'config' directly to avoid conflicts
+// Import the necessary modules for v2 functions
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { logger, config } = require("firebase-functions");
+const { logger } = require("firebase-functions");
+const { defineString } = require("firebase-functions/params");
 
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
-// This part now uses the directly imported 'config'
-const gmailEmail = config().nodemailer.email;
-const gmailPassword = config().nodemailer.password;
-
-const mailTransport = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: gmailEmail,
-    pass: gmailPassword,
-  },
-});
+// Define parameters for your function.
+// The email will be loaded from a .env file, and the password from Secret Manager.
+const nodemailerEmail = defineString("NODEMAILER_EMAIL");
+const nodemailerPassword = defineString("NODEMAILER_PASSWORD", { secret: "nodemailer-password" });
 
 exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", (event) => {
+  // Check if data exists
   const snap = event.data;
   if (!snap) {
     logger.log("No data associated with the event");
     return;
   }
-
   const submissionData = snap.data();
 
+  // Set up the email transporter using the new parameters
+  // We call .value() to get the actual string values
+  const mailTransport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: nodemailerEmail.value(),
+      pass: nodemailerPassword.value(),
+    },
+  });
+
+  // Define the email content
   const mailOptions = {
-    from: `"RS Digital Bot" <${gmailEmail}>`,
+    from: `"RS Digital Bot" <${nodemailerEmail.value()}>`,
     to: "developer@rs-digital.my",
     subject: `New Project Submission: ${submissionData["business-name"]}`,
     html: `
         <h1>New Project Questionnaire Submission</h1>
         <p>A new client has submitted the project questionnaire. Here are the details:</p>
         <hr>
-        <h3>Client Details</h3>
         <p><strong>Client Email:</strong> ${submissionData.userEmail}</p>
         <p><strong>Business Name:</strong> ${submissionData["business-name"]}</p>
-        <h3>Project Details</h3>
-        <ul>
-          ${Object.entries(submissionData)
-            .filter(([key]) => !["userId", "userEmail", "submittedAt", "status"].includes(key))
-            .map(([key, value]) => `<li><strong>${key.replace(/-/g, " ")}:</strong> ${Array.isArray(value) ? value.join(", ") : value}</li>`)
-            .join("")}
-        </ul>
-        <hr>
-        <p>You can view and manage this submission in your admin dashboard.</p>
     `,
   };
 
