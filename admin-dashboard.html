@@ -90,6 +90,7 @@
 
     <script type="module">
         import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus } from './assets/auth.js';
+        import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus, deleteSubmission } from './assets/auth.js';
 
         const logoutButton = document.getElementById('logout-button');
         logoutButton.addEventListener('click', handleLogout);
@@ -151,7 +152,19 @@
                                 <h3>${sub['business-name'] || 'No Business Name'}</h3>
                                 <div class="status-updater">
                                     <select id="status-select-${sub.id}">${optionsHTML}</select>
-                                    <button class="btn update-status-btn" data-id="${sub.id}">Update</button>
+                                    <button class="btn update-status-btn"<div class="submission-card" id="card-${sub.id}">
+                                    <div class="submission-header">
+                                        <h3>${sub['business-name'] || 'No Business Name'}</h3>
+                                        <div class="status-updater">
+                                            <select id="status-select-${sub.id}">${optionsHTML}</select>
+                                            <button class="btn update-status-btn" data-id="${sub.id}">Update</button>
+                                            <button class="btn delete-submission-btn" data-id="${sub.id}" style="background:#e74c3c;color:#fff;">Delete</button>
+                                        </div>
+                                    </div>
+                                    <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
+                                    <button class="btn toggle-details-btn" data-id="${sub.id}">View Details</button>
+                                    <div class="submission-details" id="details-${sub.id}">${detailsHTML}</div>
+                                </div> data-id="${sub.id}">Update</button>
                                 </div>
                             </div>
                             <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
@@ -190,6 +203,21 @@
                     const isVisible = detailsDiv.style.display === 'block';
                     detailsDiv.style.display = isVisible ? 'none' : 'block';
                     target.textContent = isVisible ? 'View Details' : 'Hide Details';
+                }
+                if (target.classList.contains('delete-submission-btn')) {
+                    const userId = target.dataset.id;
+                    if (confirm('Are you sure you want to delete this submission?')) {
+                        target.textContent = 'Deleting...';
+                        target.disabled = true;
+                        const success = await deleteSubmission(userId);
+                        if (success) {
+                            document.getElementById(`card-${userId}`).remove();
+                        } else {
+                            alert('Failed to delete submission.');
+                            target.textContent = 'Delete';
+                            target.disabled = false;
+                        }
+                    }
                 }
             });
         }
