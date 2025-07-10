@@ -17,6 +17,8 @@ import {
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { doc, deleteDoc } from "firebase/firestore";
+import { db } from './firebase-config.js'; // adjust import as needed
 
 // Your web app's Firebase configuration that you provided
 const firebaseConfig = {
@@ -182,6 +184,16 @@ async function updateProjectStatus(userId, newStatus) {
     }
 }
 
+export async function deleteSubmission(submissionId) {
+    try {
+        await deleteDoc(doc(db, "submissions", submissionId));
+        return true;
+    } catch (err) {
+        console.error("Failed to delete submission:", err);
+        return false;
+    }
+}
+
 
 // Export all functions
 export { 
@@ -194,5 +206,6 @@ export {
     submitQuestionnaire,
     getUserProject,
     getAllSubmissions,
-    updateProjectStatus
+    updateProjectStatus,
+    deleteSubmission
 };
