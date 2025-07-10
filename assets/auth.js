@@ -15,10 +15,13 @@ import {
     collection,
     getDocs,
     updateDoc,
+    deleteDoc, // CORRECTED: Added deleteDoc to the main import
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { doc, deleteDoc } from "firebase/firestore";
-import { db } from './firebase-config.js'; // adjust import as needed
+
+// REMOVED: Conflicting and unnecessary imports
+// import { doc, deleteDoc } from "firebase/firestore";
+// import { db } from './firebase-config.js'; 
 
 // Your web app's Firebase configuration that you provided
 const firebaseConfig = {
@@ -44,15 +47,14 @@ async function handleRegister(email, password) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
-        // Create a document for the user in Firestore
         await setDoc(doc(db, "users", user.uid), {
             email: user.email,
-            role: "client", // All new users are clients by default
+            role: "client",
             createdAt: new Date()
         });
 
         console.log("Registered successfully:", user);
-        window.location.href = "/dashboard.html"; // Redirect to client dashboard
+        window.location.href = "/dashboard.html";
     } catch (error) {
         console.error("Registration Error:", error.code, error.message);
         alert(`Registration failed: ${error.message}`);
@@ -65,8 +67,6 @@ async function handleLogin(email, password) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Check user role and redirect accordingly
-        const userDoc = await getDoc(doc(db, "users", user.uid));
         if (user.email === ADMIN_EMAIL) {
             window.location.href = "/admin-dashboard.html";
         } else {
@@ -85,7 +85,7 @@ async function handleLogout() {
     try {
         await signOut(auth);
         console.log("Logged out successfully");
-        window.location.href = "/login.html"; // Redirect to login page after logout
+        window.location.href = "/login.html";
     } catch (error) {
         console.error("Logout Error:", error);
     }
@@ -100,9 +100,7 @@ function checkAuthState(callback) {
         const isAuthPage = window.location.pathname.includes('/login.html') || window.location.pathname.includes('/register.html');
 
         if (user) {
-            // User is logged in
             if (isAuthPage) {
-                // If on login/register page, redirect away
                 if (user.email === ADMIN_EMAIL) {
                     window.location.href = '/admin-dashboard.html';
                 } else {
@@ -111,9 +109,7 @@ function checkAuthState(callback) {
             }
             callback(user);
         } else {
-            // User is signed out
             if (isProtectedPage) {
-                // If on a protected page, redirect to login
                 window.location.href = '/login.html';
             }
             callback(null);
@@ -121,7 +117,7 @@ function checkAuthState(callback) {
     });
 }
 
-// --- NEW: Function to submit questionnaire ---
+// --- Function to submit questionnaire ---
 async function submitQuestionnaire(user, formData) {
     if (!user) throw new Error("User not authenticated");
     
@@ -129,35 +125,31 @@ async function submitQuestionnaire(user, formData) {
         ...formData,
         userId: user.uid,
         userEmail: user.email,
-        status: "Under Review", // Initial status
-        submittedAt: serverTimestamp() // Use server time
+        status: "Under Review",
+        submittedAt: serverTimestamp()
     };
 
     try {
         await setDoc(doc(db, "submissions", user.uid), submissionData);
         console.log("Questionnaire submitted successfully!");
-        window.location.href = "/dashboard.html"; // Redirect to dashboard to see status
+        window.location.href = "/dashboard.html";
     } catch (error) {
         console.error("Error submitting questionnaire:", error);
         alert(`Error: ${error.message}`);
     }
 }
 
-// --- NEW: Function to get a user's project data ---
+// --- Function to get a user's project data ---
 async function getUserProject(userId) {
     if (!userId) return null;
     
     const projectDocRef = doc(db, "submissions", userId);
     const projectDocSnap = await getDoc(projectDocRef);
 
-    if (projectDocSnap.exists()) {
-        return projectDocSnap.data();
-    } else {
-        return null; // No project found for this user
-    }
+    return projectDocSnap.exists() ? projectDocSnap.data() : null;
 }
 
-// --- NEW: Function for Admin to get all submissions ---
+// --- Function for Admin to get all submissions ---
 async function getAllSubmissions() {
     const submissionsCol = collection(db, "submissions");
     const snapshot = await getDocs(submissionsCol);
@@ -167,7 +159,7 @@ async function getAllSubmissions() {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-// --- NEW: Function for Admin to update project status ---
+// --- Function for Admin to update project status ---
 async function updateProjectStatus(userId, newStatus) {
     if (!userId || !newStatus) throw new Error("User ID and new status are required.");
     
@@ -184,9 +176,11 @@ async function updateProjectStatus(userId, newStatus) {
     }
 }
 
-export async function deleteSubmission(submissionId) {
+// --- Function to delete a submission ---
+async function deleteSubmission(submissionId) {
     try {
         await deleteDoc(doc(db, "submissions", submissionId));
+        console.log(`Submission ${submissionId} deleted successfully.`);
         return true;
     } catch (err) {
         console.error("Failed to delete submission:", err);
@@ -195,7 +189,7 @@ export async function deleteSubmission(submissionId) {
 }
 
 
-// Export all functions
+// Export all functions (CORRECTED: removed duplicate deleteSubmission)
 export { 
     auth, 
     db, 

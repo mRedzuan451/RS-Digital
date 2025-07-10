@@ -66,7 +66,6 @@
             display: block;
             margin-bottom: 4px;
             font-size: 1rem;
-            /* UPDATED: The problematic text-transform line has been removed */
         }
         .status-updater { display: flex; align-items: center; gap: 10px; }
         .status-updater select { padding: 8px; background-color: var(--bg-color); color: var(--heading-color); border: 1px solid var(--border-color); border-radius: 5px; }
@@ -89,7 +88,7 @@
     </div>
 
     <script type="module">
-        import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus } from './assets/auth.js';
+        // CORRECTED: Removed duplicate import
         import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus, deleteSubmission } from './assets/auth.js';
 
         const logoutButton = document.getElementById('logout-button');
@@ -128,6 +127,7 @@
 
                 submissions.sort((a, b) => (b.submittedAt?.toMillis() || 0) - (a.submittedAt?.toMillis() || 0));
 
+                // CORRECTED: The HTML inside this map function is now properly structured.
                 let contentHTML = submissions.map(sub => {
                     const submittedDate = sub.submittedAt?.toDate().toLocaleDateString() || 'N/A';
                     
@@ -152,19 +152,8 @@
                                 <h3>${sub['business-name'] || 'No Business Name'}</h3>
                                 <div class="status-updater">
                                     <select id="status-select-${sub.id}">${optionsHTML}</select>
-                                    <button class="btn update-status-btn"<div class="submission-card" id="card-${sub.id}">
-                                    <div class="submission-header">
-                                        <h3>${sub['business-name'] || 'No Business Name'}</h3>
-                                        <div class="status-updater">
-                                            <select id="status-select-${sub.id}">${optionsHTML}</select>
-                                            <button class="btn update-status-btn" data-id="${sub.id}">Update</button>
-                                            <button class="btn delete-submission-btn" data-id="${sub.id}" style="background:#e74c3c;color:#fff;">Delete</button>
-                                        </div>
-                                    </div>
-                                    <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
-                                    <button class="btn toggle-details-btn" data-id="${sub.id}">View Details</button>
-                                    <div class="submission-details" id="details-${sub.id}">${detailsHTML}</div>
-                                </div> data-id="${sub.id}">Update</button>
+                                    <button class="btn update-status-btn" data-id="${sub.id}">Update</button>
+                                    <button class="btn delete-submission-btn" data-id="${sub.id}" style="background:#e74c3c;color:#fff;">Delete</button>
                                 </div>
                             </div>
                             <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
@@ -193,7 +182,11 @@
                     target.textContent = 'Updating...';
                     target.disabled = true;
                     const success = await updateProjectStatus(userId, newStatus);
-                    if (success) { document.getElementById(`status-text-${userId}`).textContent = newStatus; } else { alert('Failed to update status.'); }
+                    if (success) { 
+                        document.getElementById(`status-text-${userId}`).textContent = newStatus; 
+                    } else { 
+                        alert('Failed to update status.'); 
+                    }
                     target.textContent = 'Update';
                     target.disabled = false;
                 }
