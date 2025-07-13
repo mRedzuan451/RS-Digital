@@ -1,3 +1,5 @@
+// functions/index.js
+
 // Import the necessary modules for v2 functions
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { logger } = require("firebase-functions");
@@ -9,7 +11,6 @@ const nodemailer = require("nodemailer");
 admin.initializeApp();
 
 // Define parameters for your function.
-// The email will be loaded from a .env file, and the password from Secret Manager.
 const nodemailerEmail = defineString("NODEMAILER_EMAIL");
 const nodemailerPassword = defineString("NODEMAILER_PASSWORD", { secret: "nodemailer-password" });
 
@@ -22,19 +23,31 @@ exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", 
   }
   const submissionData = snap.data();
 
-  // Set up the email transporter using the new parameters
-  // We call .value() to get the actual string values
+  // --- TEMPORARY DEBUG LOGS ---
+  const emailValue = nodemailerEmail.value();
+  const passwordValue = nodemailerPassword.value();
+  logger.log("Nodemailer Email Loaded:", emailValue); 
+  logger.log("Is Nodemailer Password Loaded:", !!passwordValue, "Length:", passwordValue ? passwordValue.length : 0);
+  // --- END DEBUG LOGS ---
+
+  // Check if credentials are truly missing before proceeding
+  if (!emailValue || !passwordValue) {
+      logger.error("CRITICAL: Nodemailer credentials are not loaded. Check .env and Secret Manager permissions.");
+      return; // Stop the function
+  }
+
+  // Set up the email transporter
   const mailTransport = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: nodemailerEmail.value(),
-      pass: nodemailerPassword.value(),
+      user: emailValue,
+      pass: passwordValue,
     },
   });
 
   // Define the email content
   const mailOptions = {
-    from: `"RS Digital Bot" <${nodemailerEmail.value()}>`,
+    from: `"RS Digital Bot" <${emailValue}>`,
     to: "developer@rs-digital.my",
     subject: `New Project Submission: ${submissionData["business-name"]}`,
     html: `
