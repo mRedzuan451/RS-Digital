@@ -14,7 +14,7 @@ admin.initializeApp();
 // firebase functions:config:set nodemailer.email="your-gmail-address@gmail.com"
 // firebase functions:config:set nodemailer.password="your-gmail-app-password"
 const nodemailerEmail = defineString("NODEMAILER_EMAIL");
-const nodemailerPassword = defineString("NODEMAILER_PASSWORD", { secret: "nodemailer-password" });// It's better to manage this as a secret
+const nodemailerPassword = defineString("NODEMAILER_PASSWORD", { secret: "nodemailer-password" });
 
 // Helper function to format the form data into a readable HTML table
 function formatDataToHtml(data) {
