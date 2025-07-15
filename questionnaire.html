@@ -272,6 +272,7 @@
                     data[key] = value;
                 }
             }
+            data.userEmail = currentUser.email; 
 
             try {
                 await submitQuestionnaire(currentUser, data);
