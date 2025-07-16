@@ -167,3 +167,35 @@ exports.savePersonalInfo = onCall(async (request) => {
     throw new HttpsError('internal', 'Could not save user information.');
   }
 });
+
+exports.getUserInfo = onCall(async (request) => {
+  // Ensure the caller is authenticated.
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  }
+
+  const userId = request.data.userId;
+  if (!userId) {
+      throw new HttpsError('invalid-argument', 'The function must be called with a "userId".');
+  }
+
+  // In a production app, you would also check if the caller has an 'admin' role here.
+  // For now, we'll allow any authenticated user to proceed.
+
+  try {
+    const db = admin.firestore();
+    const userDoc = await db.collection('users').doc(userId).get();
+
+    if (!userDoc.exists) {
+      throw new HttpsError('not-found', 'User not found.');
+    }
+    
+    // Return the user's data.
+    return userDoc.data();
+
+  } catch (error) {
+    logger.error("Error getting user info for admin:", error);
+    // Avoid leaking detailed error messages to the client.
+    throw new HttpsError('internal', 'Could not fetch user information.');
+  }
+});

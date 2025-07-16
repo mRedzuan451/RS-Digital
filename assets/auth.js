@@ -196,6 +196,18 @@ async function deleteSubmission(submissionId) {
     }
 }
 
+async function getUserInfo(userId) {
+    if (!userId) throw new Error("User ID is required.");
+    
+    const getUserInfoFunction = httpsCallable(functions, 'getUserInfo');
+    try {
+        const result = await getUserInfoFunction({ userId: userId });
+        return result.data;
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        return null; // Return null on error to handle it gracefully
+    }
+}
 
 // Export all functions
 export { 
@@ -210,6 +222,7 @@ export {
     getAllSubmissions,
     updateProjectStatus,
     deleteSubmission,
+    getUserInfo,
     // Export Firebase Functions utilities
     httpsCallable,
     // RENAMED for clarity to avoid conflict with 'functions' variable

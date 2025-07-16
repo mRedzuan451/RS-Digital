@@ -88,8 +88,14 @@
     </div>
 
     <script type="module">
-        // CORRECTED: Removed duplicate import
-        import { handleLogout, checkAuthState, getAllSubmissions, updateProjectStatus, deleteSubmission } from './assets/auth.js';
+        import { 
+            handleLogout, 
+            checkAuthState, 
+            getAllSubmissions, 
+            updateProjectStatus, 
+            deleteSubmission,
+            getUserInfo // <-- Import our new function
+        } from './assets/auth.js';
 
         const logoutButton = document.getElementById('logout-button');
         logoutButton.addEventListener('click', handleLogout);
@@ -98,23 +104,12 @@
         const statusOptions = ["Under Review", "Awaiting Info", "In Progress", "Completed", "On Hold"];
 
         const labelMap = {
-          'business-name': 'Business Name',
-          'business-desc': 'Business Description',
-          'audience': 'Target Audience',
-          'goal': 'Main Goal of Website',
-          'competitors': 'Competitors / Inspirations',
-          'site-type': 'Selected Site Type',
-          'lp-headline': 'Landing Page Headline',
-          'lp-action': 'Landing Page Call to Action',
-          'lp-sections': 'Required Landing Page Sections',
-          'sb-pages': 'Required Small Business Pages',
-          'sb-services': 'Services to Feature', 
-          'cms-needed': 'Needs a Blog/CMS',
-          'style': 'Desired Website Style',
-          'branding': 'Has Existing Branding',
-          'content': 'Will Provide Content',
-          'budget': 'Approximate Budget',
-          'deadline': 'Project Deadline'
+          'business-name': 'Business Name', 'business-desc': 'Business Description', 'audience': 'Target Audience',
+          'goal': 'Main Goal of Website', 'competitors': 'Competitors / Inspirations', 'site-type': 'Selected Site Type',
+          'lp-headline': 'Landing Page Headline', 'lp-action': 'Landing Page Call to Action', 'lp-sections': 'Required Landing Page Sections',
+          'sb-pages': 'Required Small Business Pages', 'sb-services': 'Services to Feature', 'cms-needed': 'Needs a Blog/CMS',
+          'style': 'Desired Website Style', 'branding': 'Has Existing Branding', 'content': 'Will Provide Content',
+          'budget': 'Approximate Budget', 'deadline': 'Project Deadline'
         };
 
         async function displaySubmissions() {
@@ -127,20 +122,14 @@
 
                 submissions.sort((a, b) => (b.submittedAt?.toMillis() || 0) - (a.submittedAt?.toMillis() || 0));
 
-                // CORRECTED: The HTML inside this map function is now properly structured.
                 let contentHTML = submissions.map(sub => {
                     const submittedDate = sub.submittedAt?.toDate().toLocaleDateString() || 'N/A';
+                    const optionsHTML = statusOptions.map(opt => `<option value="${opt}" ${sub.status === opt ? 'selected' : ''}>${opt}</option>`).join('');
                     
-                    const optionsHTML = statusOptions.map(opt => 
-                        `<option value="${opt}" ${sub.status === opt ? 'selected' : ''}>${opt}</option>`
-                    ).join('');
-
                     let detailsHTML = '';
                     for (const [key, value] of Object.entries(sub)) {
                         if (['userId', 'userEmail', 'submittedAt', 'status'].includes(key)) continue;
-
                         const label = labelMap[key] || key.replace(/-/g, ' ');
-
                         if (value && value.length > 0) {
                             detailsHTML += `<div class="detail-item"><strong>${label}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</div>`;
                         }
@@ -157,8 +146,12 @@
                                 </div>
                             </div>
                             <p><strong>Client:</strong> ${sub.userEmail} | <strong>Submitted:</strong> ${submittedDate} | <strong>Status:</strong> <span id="status-text-${sub.id}">${sub.status}</span></p>
-                            <button class="btn toggle-details-btn" data-id="${sub.id}">View Details</button>
-                            <div class="submission-details" id="details-${sub.id}">${detailsHTML}</div>
+                            <button class="btn toggle-details-btn" data-id="${sub.id}" data-userid="${sub.userId}">View Details</button>
+                            <div class="submission-details" id="details-${sub.id}">
+                                <div class="client-info-container" id="client-info-${sub.id}"></div>
+                                <hr style="border-color: var(--border-color); margin: 20px 0;">
+                                ${detailsHTML}
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -175,37 +168,54 @@
         function addEventListeners() {
             container.addEventListener('click', async (e) => {
                 const target = e.target;
+                const userId = target.dataset.id;
+
                 if (target.classList.contains('update-status-btn')) {
-                    const userId = target.dataset.id;
                     const select = document.getElementById(`status-select-${userId}`);
                     const newStatus = select.value;
                     target.textContent = 'Updating...';
                     target.disabled = true;
                     const success = await updateProjectStatus(userId, newStatus);
-                    if (success) { 
-                        document.getElementById(`status-text-${userId}`).textContent = newStatus; 
-                    } else { 
-                        alert('Failed to update status.'); 
-                    }
+                    if (success) { document.getElementById(`status-text-${userId}`).textContent = newStatus; } 
+                    else { alert('Failed to update status.'); }
                     target.textContent = 'Update';
                     target.disabled = false;
                 }
+
                 if (target.classList.contains('toggle-details-btn')) {
-                    const detailsId = `details-${target.dataset.id}`;
-                    const detailsDiv = document.getElementById(detailsId);
+                    const detailsDiv = document.getElementById(`details-${userId}`);
                     const isVisible = detailsDiv.style.display === 'block';
                     detailsDiv.style.display = isVisible ? 'none' : 'block';
                     target.textContent = isVisible ? 'View Details' : 'Hide Details';
+
+                    // Fetch and display client info only when details are expanded for the first time
+                    if (!isVisible) {
+                        const clientInfoContainer = document.getElementById(`client-info-${userId}`);
+                        // Check if data has already been loaded
+                        if (clientInfoContainer.innerHTML === "") { 
+                            clientInfoContainer.innerHTML = '<p>Loading client info...</p>';
+                            const clientUserId = target.dataset.userid;
+                            const userInfo = await getUserInfo(clientUserId);
+                            if (userInfo) {
+                                clientInfoContainer.innerHTML = `
+                                    <div class="detail-item"><strong>Client Full Name:</strong> ${userInfo.fullName || 'Not Provided'}</div>
+                                    <div class="detail-item"><strong>Client Address:</strong> ${userInfo.address || 'Not Provided'}</div>
+                                    <div class="detail-item"><strong>Client Phone:</strong> ${userInfo.phone || 'Not Provided'}</div>
+                                `;
+                            } else {
+                                clientInfoContainer.innerHTML = '<p>Could not load client information.</p>';
+                            }
+                        }
+                    }
                 }
+
                 if (target.classList.contains('delete-submission-btn')) {
-                    const userId = target.dataset.id;
                     if (confirm('Are you sure you want to delete this submission?')) {
                         target.textContent = 'Deleting...';
                         target.disabled = true;
                         const success = await deleteSubmission(userId);
-                        if (success) {
-                            document.getElementById(`card-${userId}`).remove();
-                        } else {
+                        if (success) { document.getElementById(`card-${userId}`).remove(); } 
+                        else {
                             alert('Failed to delete submission.');
                             target.textContent = 'Delete';
                             target.disabled = false;
