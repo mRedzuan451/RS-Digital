@@ -154,11 +154,12 @@ exports.savePersonalInfo = onCall(async (request) => {
 
   try {
     const db = admin.firestore();
+    // THE ONLY CHANGE IS ADDING { merge: true }
     await db.collection('users').doc(userId).set({
       fullName,
       address,
       phone
-    }, { merge: true }); // Use merge:true to avoid overwriting other fields like email/role
+    }, { merge: true }); // <--- ADD THIS!
     
     return { message: 'Personal info saved successfully' };
   } catch (error) {
