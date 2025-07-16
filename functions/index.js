@@ -1,12 +1,12 @@
 // functions/index.js
 
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { HttpsError, onCall } = require("firebase-functions/v2/https"); // Use onCall
 const { logger } = require("firebase-functions");
 const { defineString } = require("firebase-functions/params");
 
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
-const functions = require('firebase-functions');
 
 admin.initializeApp();
 
@@ -114,40 +114,55 @@ exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", 
       .catch((error) => logger.error("There was an error sending the email:", error));
 });
 
-exports.getPersonalInfo = functions.https.onRequest(async (req, res) => {
+exports.getPersonalInfo = onCall(async (request) => {
+  // Check if the user is authenticated.
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  }
+  
+  const userId = request.data.userId;
+  if (!userId) {
+      throw new HttpsError('invalid-argument', 'The function must be called with a "userId".');
+  }
+
   try {
-    const userId = req.body.userId;
     const db = admin.firestore();
     const doc = await db.collection('users').doc(userId).get();
 
     if (!doc.exists) {
-      res.status(200).json(null); // Or send an empty object: {}
-      return;
+      return null;
     }
-
-    res.status(200).json(doc.data());
+    return doc.data();
   } catch (error) {
-    console.error("Error getting personal info:", error);
-    res.status(500).send(error);
+    logger.error("Error getting personal info:", error);
+    throw new HttpsError('internal', 'Could not fetch user information.');
   }
 });
 
-exports.savePersonalInfo = functions.https.onRequest(async (req, res) => {
-  try {
-    const userId = req.body.userId;
-    const fullName = req.body.fullName;
-    const address = req.body.address;
-    const phone = req.body.phone;
+exports.savePersonalInfo = onCall(async (request) => {
+  // Check if the user is authenticated.
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  }
+  
+  const { userId, fullName, address, phone } = request.data;
+  
+  // Validate the data
+  if (!userId || !fullName || !address || !phone) {
+    throw new HttpsError('invalid-argument', 'Missing required fields: userId, fullName, address, or phone.');
+  }
 
+  try {
     const db = admin.firestore();
     await db.collection('users').doc(userId).set({
       fullName,
       address,
       phone
-    });
-    res.status(200).json({ message: 'Personal info saved successfully' });
+    }, { merge: true }); // Use merge:true to avoid overwriting other fields like email/role
+    
+    return { message: 'Personal info saved successfully' };
   } catch (error) {
-    console.error("Error saving personal info:", error);
-    res.status(500).send(error);
+    logger.error("Error saving personal info:", error);
+    throw new HttpsError('internal', 'Could not save user information.');
   }
 });
