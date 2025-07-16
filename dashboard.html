@@ -132,8 +132,12 @@
         <div class="dashboard-content">
             <p class="welcome-message">Welcome, <span id="user-email">client</span>!</p>
             
-            <div id="project-display">
-                <p>Loading project status...</p>
+            <div id="dashboard-main-content" style="display: none;">
+              <div id="project-display">
+                  <p>Loading project status...</p>
+              </div>
+          
+              <!-- Add other dashboard contents here that should be initially hidden -->
             </div>
 
             <div id="personal-info-form" style="display: none;">
@@ -181,6 +185,7 @@
         logoutButton.addEventListener('click', handleLogout);
 
         const userEmailElement = document.getElementById('user-email');
+        const dashboardMainContent = document.getElementById('dashboard-main-content');
         const projectDisplayElement = document.getElementById('project-display');
 
         const personalInfoForm = document.getElementById('personal-info-form');
@@ -197,7 +202,12 @@
                 // User is signed in.
                 userEmailElement.textContent = user.email;
 
-                //after the user logs in, check if they have provided personal information
+                // Initially show only loading message
+                projectDisplayElement.innerHTML = '<p>Loading project status...</p>';
+                dashboardMainContent.style.display = 'none';
+
+
+                 //after the user logs in, check if they have provided personal information
                 const personalInfo = await getPersonalInfo(user.uid);
 
                 if (personalInfo) {
@@ -206,6 +216,9 @@
                     personalInfoDisplay.style.display = 'block';
 
                     displayNameElement.textContent = personalInfo.fullName;
+
+                    dashboardMainContent.style.display = 'block';
+
                     displayAddressElement.textContent = personalInfo.address;
                     displayPhoneElement.textContent = personalInfo.phone;
                 } else {
@@ -261,7 +274,7 @@
                 }
 
             } 
-            // The else case (redirecting to login) is handled by the checkAuthState function
+            //The else case (redirecting to login) is handled by the checkAuthState function
         });
     </script>
 </body>
