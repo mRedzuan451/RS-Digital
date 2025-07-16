@@ -15,15 +15,15 @@ import {
     collection,
     getDocs,
     updateDoc,
-    deleteDoc, // CORRECTED: Added deleteDoc to the main import
+    deleteDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { 
+    getFunctions, 
+    httpsCallable 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 
-// REMOVED: Conflicting and unnecessary imports
-// import { doc, deleteDoc } from "firebase/firestore";
-// import { db } from './firebase-config.js'; 
-
-// Your web app's Firebase configuration that you provided
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDVrCYmiu1ANPHpOmWR1oyY2LXdzeBJiLk",
   authDomain: "rs-digital-portfolio.firebaseapp.com",
@@ -37,6 +37,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app); // Initialize Firebase Functions
 
 // --- Define Admin ---
 const ADMIN_EMAIL = "developer@rs-digital.my";
@@ -47,14 +48,15 @@ async function handleRegister(email, password) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
+        // Create a user profile in Firestore
         await setDoc(doc(db, "users", user.uid), {
             email: user.email,
             role: "client",
-            createdAt: new Date()
+            createdAt: serverTimestamp() // Use server-side timestamp
         });
 
         console.log("Registered successfully:", user);
-        window.location.href = "/dashboard.html";
+        window.location.href = "/dashboard.html"; // Redirect to dashboard
     } catch (error) {
         console.error("Registration Error:", error.code, error.message);
         alert(`Registration failed: ${error.message}`);
@@ -67,6 +69,7 @@ async function handleLogin(email, password) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        // Redirect based on role
         if (user.email === ADMIN_EMAIL) {
             window.location.href = "/admin-dashboard.html";
         } else {
@@ -85,7 +88,7 @@ async function handleLogout() {
     try {
         await signOut(auth);
         console.log("Logged out successfully");
-        window.location.href = "/login.html";
+        window.location.href = "/login.html"; // Redirect to login page
     } catch (error) {
         console.error("Logout Error:", error);
     }
@@ -94,12 +97,15 @@ async function handleLogout() {
 // --- Auth State Observer ---
 function checkAuthState(callback) {
     onAuthStateChanged(auth, (user) => {
+        // Define which pages are protected
         const isProtectedPage = window.location.pathname.includes('/dashboard.html') || 
                                 window.location.pathname.includes('/admin-dashboard.html') ||
                                 window.location.pathname.includes('/questionnaire.html');
+        // Define auth pages
         const isAuthPage = window.location.pathname.includes('/login.html') || window.location.pathname.includes('/register.html');
 
         if (user) {
+            // If user is logged in and on an auth page, redirect them
             if (isAuthPage) {
                 if (user.email === ADMIN_EMAIL) {
                     window.location.href = '/admin-dashboard.html';
@@ -107,8 +113,9 @@ function checkAuthState(callback) {
                     window.location.href = '/dashboard.html';
                 }
             }
-            callback(user);
+            callback(user); // Proceed with loading page-specific data
         } else {
+            // If user is not logged in and tries to access a protected page, redirect
             if (isProtectedPage) {
                 window.location.href = '/login.html';
             }
@@ -125,14 +132,15 @@ async function submitQuestionnaire(user, formData) {
         ...formData,
         userId: user.uid,
         userEmail: user.email,
-        status: "Under Review",
+        status: "Under Review", // Initial status
         submittedAt: serverTimestamp()
     };
 
     try {
+        // Use the user's UID as the document ID for easy lookup
         await setDoc(doc(db, "submissions", user.uid), submissionData);
         console.log("Questionnaire submitted successfully!");
-        window.location.href = "/dashboard.html";
+        window.location.href = "/dashboard.html"; // Redirect to show project status
     } catch (error) {
         console.error("Error submitting questionnaire:", error);
         alert(`Error: ${error.message}`);
@@ -189,7 +197,7 @@ async function deleteSubmission(submissionId) {
 }
 
 
-// Export all functions (CORRECTED: removed duplicate deleteSubmission)
+// Export all functions
 export { 
     auth, 
     db, 
@@ -201,5 +209,9 @@ export {
     getUserProject,
     getAllSubmissions,
     updateProjectStatus,
-    deleteSubmission
+    deleteSubmission,
+    // Export Firebase Functions utilities
+    httpsCallable,
+    // RENAMED for clarity to avoid conflict with 'functions' variable
+    getFunctions as getFirebaseFunctions
 };
