@@ -136,7 +136,34 @@
                 <p>Loading project status...</p>
             </div>
 
+            <div id="personal-info-form" style="display: none;">
+                <h2>Personal Information</h2>
+                <form id="info-form">
+                    <label for="fullName">Full Name:</label>
+                    <input type="text" id="fullName" name="fullName" required><br><br>
+
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required><br><br>
+
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" id="phone" name="phone" required><br><br>
+
+                    <button type="submit" class="btn">Save Information</button>
+                </form>
+            </div>
+
         </div>
+    </div>
+
+    <div id="personal-info-display" style="display: none;" class="dashboard-wrapper">
+      <h1>Your Information</h1>
+      <p><strong>Full Name:</strong> <span id="display-name"></span></p>
+      <p><strong>Address:</strong> <span id="display-address"></span></p>
+      <p><strong>Phone:</strong> <span id="display-phone"></span></p>
+    </div>
+
+
+
     </div>
 
     <script type="module">
@@ -144,6 +171,8 @@
 
         // Simple theme check to style the page consistently
         const savedTheme = localStorage.getItem('theme');
+
+        const infoForm = document.getElementById('info-form');
         if (savedTheme === 'light') {
             document.body.classList.add('light-mode');
         }
@@ -154,11 +183,54 @@
         const userEmailElement = document.getElementById('user-email');
         const projectDisplayElement = document.getElementById('project-display');
 
+        const personalInfoForm = document.getElementById('personal-info-form');
+        const personalInfoDisplay = document.getElementById('personal-info-display');
+
+        const displayNameElement = document.getElementById('display-name');
+        const displayAddressElement = document.getElementById('display-address');
+        const displayPhoneElement = document.getElementById('display-phone');
+
+
         // Protect this page and fetch data
         checkAuthState(async (user) => {
             if (user) {
                 // User is signed in.
                 userEmailElement.textContent = user.email;
+
+                //after the user logs in, check if they have provided personal information
+                const personalInfo = await getPersonalInfo(user.uid);
+
+                if (personalInfo) {
+                    //display the info if available
+                    personalInfoForm.style.display = 'none';
+                    personalInfoDisplay.style.display = 'block';
+
+                    displayNameElement.textContent = personalInfo.fullName;
+                    displayAddressElement.textContent = personalInfo.address;
+                    displayPhoneElement.textContent = personalInfo.phone;
+                } else {
+                    //if personal information is not present, show form
+                    personalInfoForm.style.display = 'block';
+                    personalInfoDisplay.style.display = 'none';
+                }
+
+                infoForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const fullName = infoForm.fullName.value;
+                    const address = infoForm.address.value;
+                    const phone = infoForm.phone.value;
+
+                    const saveSuccessful = await savePersonalInfo(user.uid, fullName, address, phone)
+
+                    if (saveSuccessful) {
+                        window.location.reload(); //temporary fix will improve later
+                    } else {
+                        alert("There was an error saving the information. Please try again")
+                    }
+
+                })
+
 
                 const project = await getUserProject(user.uid);
 
@@ -193,4 +265,30 @@
         });
     </script>
 </body>
+
+
+<script>
+    async function getPersonalInfo(userId) {
+        // Implement firebase function to get personal data
+        // If user has a project already then they need to fill personal information
+        const response = await fetch('/.netlify/functions/get-personal-info', {
+            method: 'POST',
+            body: JSON.stringify({ userId: userId }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return await response.json();
+    }
+
+    async function savePersonalInfo(userId, fullName, address, phone) {
+        // Implement firebase function to save personal data
+        const response = await fetch('/.netlify/functions/save-personal-info', {
+            method: 'POST',
+            body: JSON.stringify({ userId: userId, fullName: fullName, address: address, phone: phone }),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        return response.ok;
+    }
+</script>
+
+
 </html>

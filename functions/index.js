@@ -6,6 +6,7 @@ const { defineString } = require("firebase-functions/params");
 
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
+const functions = require('firebase-functions');
 
 admin.initializeApp();
 
@@ -111,4 +112,42 @@ exports.sendEmailOnSubmission = onDocumentCreated("submissions/{submissionId}", 
   return mailTransport.sendMail(mailOptions)
       .then(() => logger.log(`New submission email sent successfully to ${mailOptions.to}!`))
       .catch((error) => logger.error("There was an error sending the email:", error));
+});
+
+exports.getPersonalInfo = functions.https.onRequest(async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const db = admin.firestore();
+    const doc = await db.collection('users').doc(userId).get();
+
+    if (!doc.exists) {
+      res.status(200).send(null); // Or send an empty object: {}
+      return;
+    }
+
+    res.status(200).send(doc.data());
+  } catch (error) {
+    console.error("Error getting personal info:", error);
+    res.status(500).send(error);
+  }
+});
+
+exports.savePersonalInfo = functions.https.onRequest(async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const fullName = req.body.fullName;
+    const address = req.body.address;
+    const phone = req.body.phone;
+
+    const db = admin.firestore();
+    await db.collection('users').doc(userId).set({
+      fullName,
+      address,
+      phone
+    });
+    res.status(200).send({ message: 'Personal info saved successfully' });
+  } catch (error) {
+    console.error("Error saving personal info:", error);
+    res.status(500).send(error);
+  }
 });
