@@ -121,11 +121,11 @@ exports.getPersonalInfo = functions.https.onRequest(async (req, res) => {
     const doc = await db.collection('users').doc(userId).get();
 
     if (!doc.exists) {
-      res.status(200).send(null); // Or send an empty object: {}
+      res.status(200).json(null); // Or send an empty object: {}
       return;
     }
 
-    res.status(200).send(doc.data());
+    res.status(200).json(doc.data());
   } catch (error) {
     console.error("Error getting personal info:", error);
     res.status(500).send(error);
@@ -145,7 +145,7 @@ exports.savePersonalInfo = functions.https.onRequest(async (req, res) => {
       address,
       phone
     });
-    res.status(200).send({ message: 'Personal info saved successfully' });
+    res.status(200).json({ message: 'Personal info saved successfully' });
   } catch (error) {
     console.error("Error saving personal info:", error);
     res.status(500).send(error);
