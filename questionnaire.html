@@ -200,6 +200,10 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="q-file-upload">Upload Your Logo or Other Files (Optional, Max 5MB)</label>
+                                <input type="file" id="q-file-upload" name="file-upload" style="padding: 10px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 5px; width: 100%;">
+                            </div>
+                            <div class="form-group">
                                 <label>Will you be providing all the text and images for the website?</label>
                                 <div class="choice-group">
                                     <label class="choice-label"><input type="radio" name="content" value="yes"> Yes, I have everything ready.</label>
@@ -247,41 +251,52 @@
             }
         });
 
+        const fileInput = document.getElementById('q-file-upload'); // <-- Get the file input
+
         // --- 2. Handle the form submission ---
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUser) {
-                alert("You must be logged in to submit.");
-                return;
-            }
+         // --- MODIFIED: Updated form submission listener ---
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            alert("You must be logged in to submit.");
+            return;
+        }
 
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
 
-            const formData = new FormData(form);
-            const data = {};
-            // This loop correctly handles text inputs, radio buttons, and checkboxes
-            for (let [key, value] of formData.entries()) {
-                 if (key.endsWith('[]')) {
-                    const cleanKey = key.slice(0, -2);
-                    if (!data[cleanKey]) {
-                        data[cleanKey] = [];
-                    }
-                    data[cleanKey].push(value);
-                } else {
-                    data[key] = value;
-                }
-            }
-            data.userEmail = currentUser.email; 
+        const file = fileInput.files[0]; // Get the selected file
 
-            try {
-                await submitQuestionnaire(currentUser, data);
-            } catch (error) {
-                alert(`Submission failed: ${error.message}`);
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Questionnaire';
+        // Check file size (optional but recommended)
+        if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
+            alert("File is too large. Please upload a file smaller than 5MB.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Questionnaire';
+            return;
+        }
+
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+             if (key.endsWith('[]')) {
+                const cleanKey = key.slice(0, -2);
+                if (!data[cleanKey]) { data[cleanKey] = []; }
+                data[cleanKey].push(value);
+            } else if (key !== 'file-upload') { // Exclude file from form data object
+                data[key] = value;
             }
-        });
+        }
+        data.userEmail = currentUser.email; 
+
+        try {
+            // Pass the user, form data, and the file to the function
+            await submitQuestionnaire(currentUser, data, file); 
+        } catch (error) {
+            alert(`Submission failed: ${error.message}`);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Questionnaire';
+        }
+    });
 
         // --- 3. Handle conditional question logic ---
         const siteTypeSelector = document.getElementById('site-type-selector');

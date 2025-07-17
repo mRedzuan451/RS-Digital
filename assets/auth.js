@@ -23,6 +23,12 @@ import {
     onAuthStateChanged,
     sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { 
+    getStorage, 
+    ref, 
+    uploadBytes, 
+    getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -39,6 +45,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const functions = getFunctions(app); // Initialize Firebase Functions
+const storage = getStorage(app); // --- NEW: Initialize Storage ---
 
 // --- Define Admin ---
 const ADMIN_EMAIL = "developer@rs-digital.my";
@@ -126,22 +133,50 @@ function checkAuthState(callback) {
 }
 
 // --- Function to submit questionnaire ---
-async function submitQuestionnaire(user, formData) {
+// --- MODIFIED: Updated function to handle file upload ---
+async function submitQuestionnaire(user, formData, file) {
     if (!user) throw new Error("User not authenticated");
     
+    let fileUrl = '';
+    let filePath = '';
+
+    // --- Step 1: Upload the file if it exists ---
+    if (file) {
+        // Create a storage reference with a unique path
+        filePath = `client-uploads/${user.uid}/${file.name}`;
+        const storageRef = ref(storage, filePath);
+
+        try {
+            // Upload the file
+            const snapshot = await uploadBytes(storageRef, file);
+            // Get the public URL of the uploaded file
+            fileUrl = await getDownloadURL(snapshot.ref);
+            console.log('File uploaded successfully. URL:', fileUrl);
+        } catch (error) {
+            console.error("File Upload Error:", error);
+            alert(`File upload failed: ${error.message}. Please try again.`);
+            // Stop the submission if the file fails to upload
+            return; 
+        }
+    }
+
+    // --- Step 2: Prepare the data for Firestore ---
     const submissionData = {
         ...formData,
         userId: user.uid,
         userEmail: user.email,
-        status: "Under Review", // Initial status
-        submittedAt: serverTimestamp()
+        status: "Under Review",
+        submittedAt: serverTimestamp(),
+        // Add file information to the submission data
+        uploadedFileUrl: fileUrl, 
+        uploadedFilePath: filePath
     };
 
+    // --- Step 3: Save the submission data to Firestore ---
     try {
-        // Use the user's UID as the document ID for easy lookup
         await setDoc(doc(db, "submissions", user.uid), submissionData);
         console.log("Questionnaire submitted successfully!");
-        window.location.href = "/dashboard.html"; // Redirect to show project status
+        window.location.href = "/dashboard.html";
     } catch (error) {
         console.error("Error submitting questionnaire:", error);
         alert(`Error: ${error.message}`);
