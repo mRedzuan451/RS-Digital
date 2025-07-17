@@ -70,7 +70,7 @@ async function _uploadFilesToStorage(user, files) {
             fileName: file.name,
             url: url,
             path: filePath,
-            uploadedAt: new Date()
+            uploadedAt: new Date().toISOString()
         };
     });
 
