@@ -212,12 +212,15 @@ async function getUserInfo(userId) {
 
 async function handlePasswordReset(email) {
     const auth = getAuth();
+    console.log("Attempting to send password reset email to:", email); // <-- Add this
+
     try {
         await sendPasswordResetEmail(auth, email);
-        alert('Password reset email sent! Please check your inbox.');
-        window.location.href = "/login.html"; // Redirect back to login page
+        console.log("Firebase function sendPasswordResetEmail was called successfully."); // <-- Add this
+        alert('Password reset email sent! Please check your inbox (and spam folder).');
+        window.location.href = "/login.html";
     } catch (error) {
-        console.error("Password Reset Error:", error);
+        console.error("Password Reset Error:", error); // <-- This will show any errors from Firebase
         alert(`Error sending password reset email: ${error.message}`);
     }
 }
