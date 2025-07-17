@@ -10,10 +10,11 @@ import {
     updateDoc,
     deleteDoc,
     serverTimestamp,
-    arrayUnion // --- NEW: Import arrayUnion ---
+    arrayUnion
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { 
-    getFunctions, 
+    // --- THIS LINE IS NOW CORRECTED ---
+    getFunctions as getFirebaseFunctions, 
     httpsCallable 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
 import { 
@@ -36,7 +37,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDVrCYmiu1ANPHpOmWR1oyY2LXdzeBJiLk",
   authDomain: "rs-digital-portfolio.firebaseapp.com",
   projectId: "rs-digital-portfolio",
-  storageBucket: "rs-digital-portfolio.firebasestorage.app", // Corrected bucket name
+  storageBucket: "rs-digital-portfolio.firebasestorage.app",
   messagingSenderId: "10175685007",
   appId: "1:10175685007:web:9d7a700139626de1e8abfa"
 };
@@ -45,7 +46,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const functions = getFunctions(app);
+// Use the renamed 'getFirebaseFunctions' to initialize the functions service
+const functions = getFirebaseFunctions(app); 
 const storage = getStorage(app);
 
 // --- Define Admin ---
@@ -55,9 +57,7 @@ const ADMIN_EMAIL = "developer@rs-digital.my";
 async function _uploadFilesToStorage(user, files) {
     if (!user || !files || files.length === 0) return [];
     
-    // Use Promise.all to handle multiple uploads in parallel
     const uploadPromises = Array.from(files).map(async (file) => {
-        // Optional: Add file size check
         if (file.size > 5 * 1024 * 1024) { // 5MB limit
             throw new Error(`File "${file.name}" is too large (max 5MB).`);
         }
@@ -76,7 +76,6 @@ async function _uploadFilesToStorage(user, files) {
 
     return Promise.all(uploadPromises);
 }
-
 
 // --- Function to handle user registration ---
 async function handleRegister(email, password) {
@@ -176,11 +175,11 @@ async function submitQuestionnaire(user, formData, files) {
     } catch (error) {
         console.error("Error submitting questionnaire:", error);
         alert(`Error: ${error.message}`);
-        throw error; // re-throw to be caught by the form handler
+        throw error;
     }
 }
 
-// --- NEW: Function to upload additional files ---
+// --- Function to upload additional files ---
 async function uploadAdditionalFiles(user, files) {
     if (!user) throw new Error("User not authenticated");
 
@@ -188,15 +187,12 @@ async function uploadAdditionalFiles(user, files) {
 
     if (newlyUploadedFiles.length > 0) {
         const submissionRef = doc(db, "submissions", user.uid);
-        // Use arrayUnion to add new files to the existing array
         await updateDoc(submissionRef, {
             uploadedFiles: arrayUnion(...newlyUploadedFiles)
         });
     }
-    // Return the list of newly uploaded files
     return newlyUploadedFiles;
 }
-
 
 // --- Function to get a user's project data ---
 async function getUserProject(userId) {
@@ -281,7 +277,7 @@ export {
     handleLogout, 
     checkAuthState,
     submitQuestionnaire,
-    uploadAdditionalFiles, // --- NEW: Export the new function ---
+    uploadAdditionalFiles,
     getUserProject,
     getAllSubmissions,
     updateProjectStatus,
@@ -289,5 +285,6 @@ export {
     getUserInfo,
     handlePasswordReset, 
     httpsCallable,
+    // This now correctly exports the renamed function
     getFirebaseFunctions
 };
