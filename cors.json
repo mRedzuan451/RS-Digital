@@ -1,0 +1,22 @@
+[
+  {
+    "origin": [
+      "http://rs-digital.my",
+      "https://rs-digital.my",
+      "http://localhost:3000",
+      "http://127.0.0.1:5500" 
+    ],
+    "method": [
+      "GET",
+      "HEAD",
+      "PUT",
+      "POST",
+      "DELETE"
+    ],
+    "responseHeader": [
+      "Content-Type",
+      "Access-Control-Allow-Origin"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]
