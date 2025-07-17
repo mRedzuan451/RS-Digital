@@ -22,6 +22,14 @@ import {
     getFunctions, 
     httpsCallable 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-functions.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -209,6 +217,18 @@ async function getUserInfo(userId) {
     }
 }
 
+async function handlePasswordReset(email) {
+    const auth = getAuth();
+    try {
+        await sendPasswordResetEmail(auth, email);
+        alert('Password reset email sent! Please check your inbox.');
+        window.location.href = "/login.html"; // Redirect back to login page
+    } catch (error) {
+        console.error("Password Reset Error:", error);
+        alert(`Error sending password reset email: ${error.message}`);
+    }
+}
+
 // Export all functions
 export { 
     auth, 
@@ -223,6 +243,7 @@ export {
     updateProjectStatus,
     deleteSubmission,
     getUserInfo,
+    handlePasswordReset, 
     // Export Firebase Functions utilities
     httpsCallable,
     // RENAMED for clarity to avoid conflict with 'functions' variable
