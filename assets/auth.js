@@ -146,7 +146,7 @@ async function submitQuestionnaire(user, formData, files) {
     if (files && files.length > 0) {
         // Use Promise.all to handle multiple uploads in parallel for efficiency
         const uploadPromises = Array.from(files).map(async (file) => {
-            const filePath = `client-uploads/${user.uid}/${file.name}`;
+            const filePath = `client-uploads/${user.email}/${file.name}`;
             const storageRef = ref(storage, filePath);
             
             try {
