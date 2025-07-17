@@ -35,7 +35,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDVrCYmiu1ANPHpOmWR1oyY2LXdzeBJiLk",
   authDomain: "rs-digital-portfolio.firebaseapp.com",
   projectId: "rs-digital-portfolio",
-  storageBucket: "rs-digital-portfolio.appspot.com",
+  storageBucket: "rs-digital-portfolio.firebasestorage.app",
   messagingSenderId: "10175685007",
   appId: "1:10175685007:web:9d7a700139626de1e8abfa"
 };
