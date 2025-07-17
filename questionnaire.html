@@ -200,8 +200,8 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="q-file-upload">Upload Your Logo or Other Files (Optional, Max 5MB)</label>
-                                <input type="file" id="q-file-upload" name="file-upload" style="padding: 10px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 5px; width: 100%;">
+                                <label for="q-file-upload">Upload Your Logo or Other Files (Optional, Max 5MB each)</label>
+                                <input type="file" id="q-file-upload" name="file-upload" multiple style="padding: 10px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 5px; width: 100%;">
                             </div>
                             <div class="form-group">
                                 <label>Will you be providing all the text and images for the website?</label>
@@ -265,14 +265,16 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
 
-        const file = fileInput.files[0]; // Get the selected file
+        const files = fileInput.files; // Get the entire FileList
 
         // Check file size (optional but recommended)
-        if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
-            alert("File is too large. Please upload a file smaller than 5MB.");
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Questionnaire';
-            return;
+        for (const file of files) {
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                alert(`The file "${file.name}" is too large. Please upload files smaller than 5MB.`);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Questionnaire';
+                return;
+            }
         }
 
         const formData = new FormData(form);
@@ -290,7 +292,7 @@
 
         try {
             // Pass the user, form data, and the file to the function
-            await submitQuestionnaire(currentUser, data, file); 
+            await submitQuestionnaire(currentUser, data, files); 
         } catch (error) {
             alert(`Submission failed: ${error.message}`);
             submitBtn.disabled = false;

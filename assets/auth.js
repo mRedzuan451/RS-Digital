@@ -134,29 +134,45 @@ function checkAuthState(callback) {
 
 // --- Function to submit questionnaire ---
 // --- MODIFIED: Updated function to handle file upload ---
-async function submitQuestionnaire(user, formData, file) {
-    if (!user) throw new Error("User not authenticated");
-    
-    let fileUrl = '';
-    let filePath = '';
+// assets/auth.js
 
-    // --- Step 1: Upload the file if it exists ---
-    if (file) {
-        // Create a storage reference with a unique path
-        filePath = `client-uploads/${user.uid}/${file.name}`;
-        const storageRef = ref(storage, filePath);
+// This function is now updated to handle an array of files.
+async function submitQuestionnaire(user, formData, files) {
+    if (!user) throw new Error("User not authenticated");
+
+    const uploadedFiles = []; // Will store info for all uploaded files
+
+    // --- Step 1: Upload all files if any exist ---
+    if (files && files.length > 0) {
+        // Use Promise.all to handle multiple uploads in parallel for efficiency
+        const uploadPromises = Array.from(files).map(async (file) => {
+            const filePath = `client-uploads/${user.uid}/${file.name}`;
+            const storageRef = ref(storage, filePath);
+            
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(snapshot.ref);
+                // Return an object with the file's info
+                return {
+                    fileName: file.name,
+                    url: url,
+                    path: filePath
+                };
+            } catch (error) {
+                console.error(`Error uploading ${file.name}:`, error);
+                // Throw the error to stop the submission process if one file fails
+                throw new Error(`Failed to upload ${file.name}.`);
+            }
+        });
 
         try {
-            // Upload the file
-            const snapshot = await uploadBytes(storageRef, file);
-            // Get the public URL of the uploaded file
-            fileUrl = await getDownloadURL(snapshot.ref);
-            console.log('File uploaded successfully. URL:', fileUrl);
+            // Wait for all the file uploads to complete
+            const settledFiles = await Promise.all(uploadPromises);
+            uploadedFiles.push(...settledFiles);
+            console.log('All files uploaded successfully:', uploadedFiles);
         } catch (error) {
-            console.error("File Upload Error:", error);
-            alert(`File upload failed: ${error.message}. Please try again.`);
-            // Stop the submission if the file fails to upload
-            return; 
+            alert(error.message); // Show the error to the user
+            return; // Stop the function
         }
     }
 
@@ -167,9 +183,8 @@ async function submitQuestionnaire(user, formData, file) {
         userEmail: user.email,
         status: "Under Review",
         submittedAt: serverTimestamp(),
-        // Add file information to the submission data
-        uploadedFileUrl: fileUrl, 
-        uploadedFilePath: filePath
+        // Save the array of uploaded file data
+        uploadedFiles: uploadedFiles 
     };
 
     // --- Step 3: Save the submission data to Firestore ---
