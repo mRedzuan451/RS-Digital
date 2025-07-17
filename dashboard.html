@@ -12,7 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CSS Variables (Dark Theme) --- */
         :root {
             --bg-color: #0a192f;
             --card-bg-color: #112240;
@@ -25,7 +24,6 @@
             --font-family: 'Poppins', sans-serif;
         }
 
-        /* --- CSS Variables (Light Theme) --- */
         body.light-mode {
             --bg-color: #F7F9FC;
             --card-bg-color: #FFFFFF;
@@ -51,103 +49,71 @@
         body.light-mode {
              background-image: url('assets/light-background.jpg');
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: var(--heading-color);
         }
-        h2 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-        }
+        h2 { margin-top: 30px; margin-bottom: 15px; }
+        h3 { margin-top: 25px; margin-bottom: 10px; color: var(--accent-color); }
         
-        /* --- Dashboard Specific Styles --- */
         .dashboard-wrapper {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 40px;
-            background-color: var(--card-bg-color);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+            max-width: 900px; margin: 20px auto; padding: 40px;
+            background-color: var(--card-bg-color); border-radius: 8px; border: 1px solid var(--border-color);
         }
         .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 20px;
         }
         .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-decoration: none;
-            background-color: var(--accent-color);
-            color: var(--button-text-color);
-            transition: opacity 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            margin-right: 10px; /* Added for spacing between buttons */
+            display: inline-block; padding: 10px 20px; border-radius: 5px;
+            font-weight: bold; text-decoration: none; background-color: var(--accent-color);
+            color: var(--button-text-color); transition: opacity 0.3s ease;
+            border: none; cursor: pointer; font-size: 0.9rem; margin-right: 10px;
         }
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        .btn:hover:not(:disabled) {
-            opacity: 0.85;
-        }
-        /* --- NEW: Style for secondary/cancel button --- */
-        .btn-secondary {
-            background-color: var(--text-color);
-            color: var(--bg-color);
-        }
-        .welcome-message {
-            margin-bottom: 30px;
-        }
-        .welcome-message span {
-            font-weight: bold;
-            color: var(--light-text-color);
-        }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn:hover:not(:disabled) { opacity: 0.85; }
+        .btn-secondary { background-color: var(--text-color); color: var(--bg-color); }
+
+        .welcome-message { margin-bottom: 30px; }
+        .welcome-message span { font-weight: bold; color: var(--light-text-color); }
+        
         .project-status, .info-card {
-            background-color: var(--bg-color);
-            padding: 20px;
-            border-radius: 5px;
-            border-left: 5px solid var(--accent-color);
+            background-color: var(--bg-color); padding: 20px;
+            border-radius: 5px; border-left: 5px solid var(--accent-color);
         }
-        .info-card {
-             margin-top: 30px;
-        }
-        .project-status p, .info-card p {
-            color: var(--light-text-color);
-        }
-        .project-status strong, .info-card strong {
-            color: var(--heading-color);
-        }
+        .info-card { margin-top: 30px; }
+        
+        .project-status p, .info-card p { color: var(--light-text-color); }
+        .project-status strong, .info-card strong { color: var(--heading-color); }
+
         .new-project-cta {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
+            margin-top: 40px; padding-top: 30px;
+            border-top: 1px solid var(--border-color); text-align: center;
         }
         
+        /* --- NEW: Styles for file list and upload section --- */
+        .file-list { list-style: none; padding-left: 0; }
+        .file-list li {
+            background-color: var(--card-bg-color); border: 1px solid var(--border-color);
+            padding: 10px 15px; border-radius: 5px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .file-list a { color: var(--accent-color); text-decoration: none; font-weight: 600; }
+        .file-list a:hover { text-decoration: underline; }
+        
+        .upload-section { margin-top: 20px; }
+        .upload-section input[type="file"] {
+            width: 100%; padding: 10px; background-color: var(--bg-color);
+            color: var(--text-color); border: 1px solid var(--border-color); border-radius: 5px;
+        }
+        #upload-status { margin-top: 10px; color: var(--accent-color); }
+
         /* Form styles */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
         .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: var(--heading-color);
-            border-radius: 5px;
-            font-size: 1rem;
+            width: 100%; padding: 10px; border: 1px solid var(--border-color);
+            background-color: var(--bg-color); color: var(--heading-color);
+            border-radius: 5px; font-size: 1rem;
         }
     </style>
 </head>
@@ -177,7 +143,8 @@
             checkAuthState, 
             getUserProject, 
             getFirebaseFunctions, 
-            httpsCallable 
+            httpsCallable,
+            uploadAdditionalFiles // --- NEW: Import our new function ---
         } from './assets/auth.js';
 
         // --- 1. GET DOM ELEMENTS ---
@@ -185,6 +152,7 @@
         const userEmailElement = document.getElementById('user-email');
         const projectDisplayElement = document.getElementById('project-display');
         const personalInfoContainer = document.getElementById('personal-info-section');
+        let currentUser = null; // --- NEW: Store the current user globally within the script ---
 
         // --- 2. ADD EVENT LISTENERS ---
         logoutButton.addEventListener('click', handleLogout);
@@ -198,18 +166,39 @@
         // --- 4. HELPER FUNCTIONS TO RENDER CONTENT ---
         function renderProjectStatus(project) {
             if (project) {
-                // A project/submission exists for this user
+                // --- MODIFIED: Display file list and upload section ---
+                let filesHTML = '<h3>Uploaded Files</h3><p>No files uploaded yet.</p>';
+                if (project.uploadedFiles && project.uploadedFiles.length > 0) {
+                    filesHTML = `
+                        <h3>Uploaded Files</h3>
+                        <ul class="file-list">
+                            ${project.uploadedFiles.map(file => `
+                                <li>
+                                    <a href="${file.url}" target="_blank" rel="noopener noreferrer">${file.fileName}</a>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    `;
+                }
+
                 projectDisplayElement.innerHTML = `
                     <h2>Your Project Status</h2>
                     <div class="project-status">
                         <p><strong>Project:</strong> ${project['business-name'] || 'Project Details'}</p>
                         <p><strong>Status:</strong> ${project.status || 'N/A'}</p>
                         <br>
-                        <p>Thank you for your submission. We are currently reviewing your details and will update the status here shortly. You can see any updates from the admin right here.</p>
+                        ${filesHTML}
+                        <div class="upload-section">
+                            <h3>Upload More Files</h3>
+                            <input type="file" id="additional-files-input" multiple>
+                            <button id="upload-files-btn" class="btn" style="margin-top: 10px;">Upload</button>
+                            <p id="upload-status"></p>
+                        </div>
                     </div>
                 `;
+                // Add listener to the new upload button
+                document.getElementById('upload-files-btn').addEventListener('click', handleFileUpload);
             } else {
-                // No project found
                 projectDisplayElement.innerHTML = `
                     <h2>Welcome!</h2>
                     <div class="project-status">
@@ -224,11 +213,9 @@
             }
         }
         
-        // --- MODIFIED: This function now renders the form for both creating and editing ---
         function renderInfoForm(user, existingInfo = {}) {
             personalInfoContainer.innerHTML = `
                 <h2>${existingInfo.fullName ? 'Update' : 'Complete'} Your Profile</h2>
-                <p>Please provide your personal information for our records.</p>
                 <form id="info-form">
                     <div class="form-group">
                         <label for="fullName">Full Name:</label>
@@ -246,21 +233,15 @@
                     ${existingInfo.fullName ? '<button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>' : ''}
                 </form>
             `;
-            // Add listener to the form for submission
             addInfoFormListener(user);
 
-            // Add a listener for the cancel button if it exists
             const cancelBtn = document.getElementById('cancel-edit-btn');
             if (cancelBtn) {
-                cancelBtn.addEventListener('click', () => {
-                    renderPersonalInfo(existingInfo, user); // Go back to displaying the info
-                });
+                cancelBtn.addEventListener('click', () => renderPersonalInfo(existingInfo, user));
             }
         }
 
-        // --- MODIFIED: This function now renders the info display with an "Edit" button ---
         function renderPersonalInfo(info, user) {
-            // Check if info and fullName exist to determine if a profile is set
             if (info && info.fullName) {
                  personalInfoContainer.innerHTML = `
                     <h2>Your Information</h2>
@@ -269,12 +250,8 @@
                     <p><strong>Phone:</strong> ${info.phone}</p>
                     <button id="edit-info-btn" class="btn" style="margin-top: 15px;">Edit Information</button>
                  `;
-                 // Add listener to the newly created edit button
-                 document.getElementById('edit-info-btn').addEventListener('click', () => {
-                    renderInfoForm(user, info); // Show the form, pre-filled with existing info
-                 });
+                 document.getElementById('edit-info-btn').addEventListener('click', () => renderInfoForm(user, info));
             } else {
-                // If personal information is not present, show the form immediately.
                 renderInfoForm(user);
             }
         }
@@ -282,31 +259,59 @@
         // --- 5. AUTH & DATA FETCHING ---
         checkAuthState(async (user) => {
             if (user) {
+                currentUser = user; // Store user object
                 userEmailElement.textContent = user.email;
 
-                // --- Firebase Cloud Function Setup ---
                 const functions = getFirebaseFunctions();
                 const getPersonalInfo = httpsCallable(functions, 'getPersonalInfo');
                 
-                // Fetch project and personal info in parallel for speed
                 const [project, personalInfoResponse] = await Promise.all([
                     getUserProject(user.uid),
                     getPersonalInfo({ userId: user.uid })
                 ]);
                 
-                // Render each section with the data we got
                 renderProjectStatus(project);
                 renderPersonalInfo(personalInfoResponse.data, user);
 
             } 
-            // The `else` case (redirecting to login) is handled by the checkAuthState function
         });
 
+        // --- NEW: Function to handle the file upload button click ---
+        async function handleFileUpload() {
+            const uploadBtn = document.getElementById('upload-files-btn');
+            const fileInput = document.getElementById('additional-files-input');
+            const statusEl = document.getElementById('upload-status');
+            const files = fileInput.files;
+
+            if (!files || files.length === 0) {
+                statusEl.textContent = 'Please select files to upload.';
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            statusEl.textContent = 'Uploading...';
+
+            try {
+                await uploadAdditionalFiles(currentUser, files);
+                statusEl.textContent = 'Upload successful!';
+                fileInput.value = ''; // Clear the file input
+                
+                // Refresh the project display to show the new files
+                const updatedProject = await getUserProject(currentUser.uid);
+                renderProjectStatus(updatedProject);
+
+            } catch (error) {
+                console.error("Upload failed:", error);
+                statusEl.textContent = `Upload failed: ${error.message}`;
+            } finally {
+                uploadBtn.disabled = false;
+            }
+        }
 
         // --- 6. FORM SUBMISSION LOGIC ---
         function addInfoFormListener(user) {
              const infoForm = document.getElementById('info-form');
-             if (!infoForm) return; // Guard clause
+             if (!infoForm) return;
 
              infoForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -322,14 +327,7 @@
                     const address = infoForm.address.value;
                     const phone = infoForm.phone.value;
 
-                    await savePersonalInfo({ 
-                        userId: user.uid, 
-                        fullName: fullName, 
-                        address: address, 
-                        phone: phone 
-                    });
-
-                    // Re-render the personal info section to show the newly saved data and the "Edit" button
+                    await savePersonalInfo({ userId: user.uid, fullName, address, phone });
                     renderPersonalInfo({ fullName, address, phone }, user);
 
                 } catch (error) {

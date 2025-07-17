@@ -9,7 +9,8 @@ import {
     getDocs,
     updateDoc,
     deleteDoc,
-    serverTimestamp
+    serverTimestamp,
+    arrayUnion // --- NEW: Import arrayUnion ---
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { 
     getFunctions, 
@@ -35,7 +36,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDVrCYmiu1ANPHpOmWR1oyY2LXdzeBJiLk",
   authDomain: "rs-digital-portfolio.firebaseapp.com",
   projectId: "rs-digital-portfolio",
-  storageBucket: "rs-digital-portfolio.firebasestorage.app",
+  storageBucket: "rs-digital-portfolio.firebasestorage.app", // Corrected bucket name
   messagingSenderId: "10175685007",
   appId: "1:10175685007:web:9d7a700139626de1e8abfa"
 };
@@ -44,11 +45,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const functions = getFunctions(app); // Initialize Firebase Functions
-const storage = getStorage(app); // --- NEW: Initialize Storage ---
+const functions = getFunctions(app);
+const storage = getStorage(app);
 
 // --- Define Admin ---
 const ADMIN_EMAIL = "developer@rs-digital.my";
+
+// --- Internal helper function to handle file uploads ---
+async function _uploadFilesToStorage(user, files) {
+    if (!user || !files || files.length === 0) return [];
+    
+    // Use Promise.all to handle multiple uploads in parallel
+    const uploadPromises = Array.from(files).map(async (file) => {
+        // Optional: Add file size check
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            throw new Error(`File "${file.name}" is too large (max 5MB).`);
+        }
+        const filePath = `client-uploads/${user.email}/${file.name}`;
+        const storageRef = ref(storage, filePath);
+        
+        const snapshot = await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(snapshot.ref);
+        return {
+            fileName: file.name,
+            url: url,
+            path: filePath,
+            uploadedAt: new Date()
+        };
+    });
+
+    return Promise.all(uploadPromises);
+}
+
 
 // --- Function to handle user registration ---
 async function handleRegister(email, password) {
@@ -56,15 +84,14 @@ async function handleRegister(email, password) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         
-        // Create a user profile in Firestore
         await setDoc(doc(db, "users", user.uid), {
             email: user.email,
             role: "client",
-            createdAt: serverTimestamp() // Use server-side timestamp
+            createdAt: serverTimestamp()
         });
 
         console.log("Registered successfully:", user);
-        window.location.href = "/dashboard.html"; // Redirect to dashboard
+        window.location.href = "/dashboard.html";
     } catch (error) {
         console.error("Registration Error:", error.code, error.message);
         alert(`Registration failed: ${error.message}`);
@@ -77,7 +104,6 @@ async function handleLogin(email, password) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Redirect based on role
         if (user.email === ADMIN_EMAIL) {
             window.location.href = "/admin-dashboard.html";
         } else {
@@ -96,7 +122,7 @@ async function handleLogout() {
     try {
         await signOut(auth);
         console.log("Logged out successfully");
-        window.location.href = "/login.html"; // Redirect to login page
+        window.location.href = "/login.html";
     } catch (error) {
         console.error("Logout Error:", error);
     }
@@ -105,15 +131,12 @@ async function handleLogout() {
 // --- Auth State Observer ---
 function checkAuthState(callback) {
     onAuthStateChanged(auth, (user) => {
-        // Define which pages are protected
         const isProtectedPage = window.location.pathname.includes('/dashboard.html') || 
                                 window.location.pathname.includes('/admin-dashboard.html') ||
                                 window.location.pathname.includes('/questionnaire.html');
-        // Define auth pages
         const isAuthPage = window.location.pathname.includes('/login.html') || window.location.pathname.includes('/register.html');
 
         if (user) {
-            // If user is logged in and on an auth page, redirect them
             if (isAuthPage) {
                 if (user.email === ADMIN_EMAIL) {
                     window.location.href = '/admin-dashboard.html';
@@ -121,9 +144,8 @@ function checkAuthState(callback) {
                     window.location.href = '/dashboard.html';
                 }
             }
-            callback(user); // Proceed with loading page-specific data
+            callback(user);
         } else {
-            // If user is not logged in and tries to access a protected page, redirect
             if (isProtectedPage) {
                 window.location.href = '/login.html';
             }
@@ -132,71 +154,49 @@ function checkAuthState(callback) {
     });
 }
 
-// --- Function to submit questionnaire ---
-// --- MODIFIED: Updated function to handle file upload ---
-// assets/auth.js
-
-// This function is now updated to handle an array of files.
+// --- Function to submit initial questionnaire ---
 async function submitQuestionnaire(user, formData, files) {
     if (!user) throw new Error("User not authenticated");
 
-    const uploadedFiles = []; // Will store info for all uploaded files
-
-    // --- Step 1: Upload all files if any exist ---
-    if (files && files.length > 0) {
-        // Use Promise.all to handle multiple uploads in parallel for efficiency
-        const uploadPromises = Array.from(files).map(async (file) => {
-            const filePath = `client-uploads/${user.email}/${file.name}`;
-            const storageRef = ref(storage, filePath);
-            
-            try {
-                const snapshot = await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(snapshot.ref);
-                // Return an object with the file's info
-                return {
-                    fileName: file.name,
-                    url: url,
-                    path: filePath
-                };
-            } catch (error) {
-                console.error(`Error uploading ${file.name}:`, error);
-                // Throw the error to stop the submission process if one file fails
-                throw new Error(`Failed to upload ${file.name}.`);
-            }
-        });
-
-        try {
-            // Wait for all the file uploads to complete
-            const settledFiles = await Promise.all(uploadPromises);
-            uploadedFiles.push(...settledFiles);
-            console.log('All files uploaded successfully:', uploadedFiles);
-        } catch (error) {
-            alert(error.message); // Show the error to the user
-            return; // Stop the function
-        }
-    }
-
-    // --- Step 2: Prepare the data for Firestore ---
-    const submissionData = {
-        ...formData,
-        userId: user.uid,
-        userEmail: user.email,
-        status: "Under Review",
-        submittedAt: serverTimestamp(),
-        // Save the array of uploaded file data
-        uploadedFiles: uploadedFiles 
-    };
-
-    // --- Step 3: Save the submission data to Firestore ---
     try {
+        const uploadedFiles = await _uploadFilesToStorage(user, files);
+        
+        const submissionData = {
+            ...formData,
+            userId: user.uid,
+            userEmail: user.email,
+            status: "Under Review",
+            submittedAt: serverTimestamp(),
+            uploadedFiles: uploadedFiles 
+        };
+    
         await setDoc(doc(db, "submissions", user.uid), submissionData);
         console.log("Questionnaire submitted successfully!");
         window.location.href = "/dashboard.html";
     } catch (error) {
         console.error("Error submitting questionnaire:", error);
         alert(`Error: ${error.message}`);
+        throw error; // re-throw to be caught by the form handler
     }
 }
+
+// --- NEW: Function to upload additional files ---
+async function uploadAdditionalFiles(user, files) {
+    if (!user) throw new Error("User not authenticated");
+
+    const newlyUploadedFiles = await _uploadFilesToStorage(user, files);
+
+    if (newlyUploadedFiles.length > 0) {
+        const submissionRef = doc(db, "submissions", user.uid);
+        // Use arrayUnion to add new files to the existing array
+        await updateDoc(submissionRef, {
+            uploadedFiles: arrayUnion(...newlyUploadedFiles)
+        });
+    }
+    // Return the list of newly uploaded files
+    return newlyUploadedFiles;
+}
+
 
 // --- Function to get a user's project data ---
 async function getUserProject(userId) {
@@ -256,21 +256,18 @@ async function getUserInfo(userId) {
         return result.data;
     } catch (error) {
         console.error("Error fetching user info:", error);
-        return null; // Return null on error to handle it gracefully
+        return null;
     }
 }
 
 async function handlePasswordReset(email) {
     const auth = getAuth();
-    console.log("Attempting to send password reset email to:", email); // <-- Add this
-
     try {
         await sendPasswordResetEmail(auth, email);
-        console.log("Firebase function sendPasswordResetEmail was called successfully."); // <-- Add this
         alert('Password reset email sent! Please check your inbox (and spam folder).');
         window.location.href = "/login.html";
     } catch (error) {
-        console.error("Password Reset Error:", error); // <-- This will show any errors from Firebase
+        console.error("Password Reset Error:", error);
         alert(`Error sending password reset email: ${error.message}`);
     }
 }
@@ -284,14 +281,13 @@ export {
     handleLogout, 
     checkAuthState,
     submitQuestionnaire,
+    uploadAdditionalFiles, // --- NEW: Export the new function ---
     getUserProject,
     getAllSubmissions,
     updateProjectStatus,
     deleteSubmission,
     getUserInfo,
     handlePasswordReset, 
-    // Export Firebase Functions utilities
     httpsCallable,
-    // RENAMED for clarity to avoid conflict with 'functions' variable
-    getFunctions as getFirebaseFunctions
+    getFirebaseFunctions
 };
