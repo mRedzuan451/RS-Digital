@@ -88,6 +88,7 @@
             border: none;
             cursor: pointer;
             font-size: 0.9rem;
+            margin-right: 10px; /* Added for spacing between buttons */
         }
         .btn:disabled {
             opacity: 0.6;
@@ -95,6 +96,11 @@
         }
         .btn:hover:not(:disabled) {
             opacity: 0.85;
+        }
+        /* --- NEW: Style for secondary/cancel button --- */
+        .btn-secondary {
+            background-color: var(--text-color);
+            color: var(--bg-color);
         }
         .welcome-message {
             margin-bottom: 30px;
@@ -143,7 +149,6 @@
             border-radius: 5px;
             font-size: 1rem;
         }
-
     </style>
 </head>
 <body>
@@ -219,37 +224,58 @@
             }
         }
         
+        // --- MODIFIED: This function now renders the form for both creating and editing ---
+        function renderInfoForm(user, existingInfo = {}) {
+            personalInfoContainer.innerHTML = `
+                <h2>${existingInfo.fullName ? 'Update' : 'Complete'} Your Profile</h2>
+                <p>Please provide your personal information for our records.</p>
+                <form id="info-form">
+                    <div class="form-group">
+                        <label for="fullName">Full Name:</label>
+                        <input type="text" id="fullName" name="fullName" value="${existingInfo.fullName || ''}" required>
+                    </div>
+                    <div class="form-group">
+                         <label for="address">Address:</label>
+                         <input type="text" id="address" name="address" value="${existingInfo.address || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="text" id="phone" name="phone" value="${existingInfo.phone || ''}" required>
+                    </div>
+                    <button type="submit" class="btn">Save Information</button>
+                    ${existingInfo.fullName ? '<button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>' : ''}
+                </form>
+            `;
+            // Add listener to the form for submission
+            addInfoFormListener(user);
+
+            // Add a listener for the cancel button if it exists
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    renderPersonalInfo(existingInfo, user); // Go back to displaying the info
+                });
+            }
+        }
+
+        // --- MODIFIED: This function now renders the info display with an "Edit" button ---
         function renderPersonalInfo(info, user) {
-            if (info) {
+            // Check if info and fullName exist to determine if a profile is set
+            if (info && info.fullName) {
                  personalInfoContainer.innerHTML = `
                     <h2>Your Information</h2>
-                    <p><strong>Full Name:</strong> ${info.fullName || 'Not set'}</p>
-                    <p><strong>Address:</strong> ${info.address || 'Not set'}</p>
-                    <p><strong>Phone:</strong> ${info.phone || 'Not set'}</p>
+                    <p><strong>Full Name:</strong> ${info.fullName}</p>
+                    <p><strong>Address:</strong> ${info.address}</p>
+                    <p><strong>Phone:</strong> ${info.phone}</p>
+                    <button id="edit-info-btn" class="btn" style="margin-top: 15px;">Edit Information</button>
                  `;
+                 // Add listener to the newly created edit button
+                 document.getElementById('edit-info-btn').addEventListener('click', () => {
+                    renderInfoForm(user, info); // Show the form, pre-filled with existing info
+                 });
             } else {
-                // If personal information is not present, show the form
-                personalInfoContainer.innerHTML = `
-                    <h2>Complete Your Profile</h2>
-                    <p>Please provide your personal information for our records.</p>
-                    <form id="info-form">
-                        <div class="form-group">
-                            <label for="fullName">Full Name:</label>
-                            <input type="text" id="fullName" name="fullName" required>
-                        </div>
-                        <div class="form-group">
-                             <label for="address">Address:</label>
-                             <input type="text" id="address" name="address" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number:</label>
-                            <input type="text" id="phone" name="phone" required>
-                        </div>
-                        <button type="submit" class="btn">Save Information</button>
-                    </form>
-                `;
-                // Add listener to the newly created form
-                addInfoFormListener(user);
+                // If personal information is not present, show the form immediately.
+                renderInfoForm(user);
             }
         }
 
@@ -288,7 +314,6 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Saving...';
 
-                // --- Firebase Cloud Function Setup ---
                 const functions = getFirebaseFunctions();
                 const savePersonalInfo = httpsCallable(functions, 'savePersonalInfo');
 
@@ -304,7 +329,7 @@
                         phone: phone 
                     });
 
-                    // Re-render the personal info section to show the saved data
+                    // Re-render the personal info section to show the newly saved data and the "Edit" button
                     renderPersonalInfo({ fullName, address, phone }, user);
 
                 } catch (error) {
