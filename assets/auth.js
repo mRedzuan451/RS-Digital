@@ -61,7 +61,7 @@ async function _uploadFilesToStorage(user, files) {
         if (file.size > 5 * 1024 * 1024) { // 5MB limit
             throw new Error(`File "${file.name}" is too large (max 5MB).`);
         }
-        const filePath = `client-uploads/${user.email}/${file.name}`;
+        const filePath = `client-uploads/${user.uid}/${file.name}`;
         const storageRef = ref(storage, filePath);
         
         const snapshot = await uploadBytes(storageRef, file);
