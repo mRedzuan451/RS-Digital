@@ -194,25 +194,30 @@ async function uploadAdditionalFiles(user, files) {
         const docSnap = await getDoc(submissionRef);
 
         if (docSnap.exists()) {
-            // --- MANUAL UPDATE LOGIC ---
-            // 1. Get the array of files that already exists.
+            // Manual "array union"
             const existingFiles = docSnap.data().uploadedFiles || [];
-            
-            // 2. Create a new array with the old files and the new files.
             const updatedFiles = [...existingFiles, ...newlyUploadedFiles];
             
-            // 3. Overwrite the field with the new, complete array.
-            await updateDoc(submissionRef, { uploadedFiles: updatedFiles });
+            // --- NEW: Log the data before sending ---
+            const updateData = { uploadedFiles: updatedFiles };
+            console.log("Attempting to UPDATE document with this data:", updateData);
+            
+            await updateDoc(submissionRef, updateData);
 
         } else {
-            // If the document does not exist, create it.
-            await setDoc(submissionRef, {
+            // Create a new document
+            const newDocData = {
                 userId: user.uid,
                 userEmail: user.email,
                 status: "Under Review",
                 submittedAt: serverTimestamp(),
                 uploadedFiles: newlyUploadedFiles 
-            });
+            };
+            
+            // --- NEW: Log the data before sending ---
+            console.log("Attempting to CREATE document with this data:", newDocData);
+
+            await setDoc(submissionRef, newDocData);
         }
     }
     return newlyUploadedFiles;
