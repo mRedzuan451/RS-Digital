@@ -179,16 +179,33 @@ async function submitQuestionnaire(user, formData, files) {
 }
 
 // --- Function to upload additional files ---
+// Replace the existing uploadAdditionalFiles function in auth.js with this one.
+
 async function uploadAdditionalFiles(user, files) {
     if (!user) throw new Error("User not authenticated");
 
+    // Step 1: Upload files to Storage. This part has been working correctly.
     const newlyUploadedFiles = await _uploadFilesToStorage(user, files);
 
     if (newlyUploadedFiles.length > 0) {
         const submissionRef = doc(db, "submissions", user.uid);
-        await updateDoc(submissionRef, {
-            uploadedFiles: arrayUnion(...newlyUploadedFiles)
-        });
+        const docSnap = await getDoc(submissionRef); // First, check if a document already exists
+
+        if (docSnap.exists()) {
+            // If the document exists, UPDATE it with the new file information.
+            await updateDoc(submissionRef, {
+                uploadedFiles: arrayUnion(...newlyUploadedFiles)
+            });
+        } else {
+            // If the document DOES NOT exist, CREATE it for the first time.
+            await setDoc(submissionRef, {
+                userId: user.uid,
+                userEmail: user.email,
+                status: "Under Review", // Set a default status
+                submittedAt: serverTimestamp(),
+                uploadedFiles: newlyUploadedFiles // Create the array with the new files
+            });
+        }
     }
     return newlyUploadedFiles;
 }
