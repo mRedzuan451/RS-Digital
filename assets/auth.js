@@ -69,8 +69,7 @@ async function _uploadFilesToStorage(user, files) {
         return {
             fileName: file.name,
             url: url,
-            path: filePath,
-            uploadedAt: new Date().toISOString()
+            path: filePath
         };
     });
 
