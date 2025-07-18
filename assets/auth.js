@@ -181,29 +181,37 @@ async function submitQuestionnaire(user, formData, files) {
 // --- Function to upload additional files ---
 // Replace the existing uploadAdditionalFiles function in auth.js with this one.
 
+// Replace the existing uploadAdditionalFiles function in auth.js with this one.
+
 async function uploadAdditionalFiles(user, files) {
     if (!user) throw new Error("User not authenticated");
 
-    // Step 1: Upload files to Storage. This part has been working correctly.
+    // Upload files to Storage
     const newlyUploadedFiles = await _uploadFilesToStorage(user, files);
 
     if (newlyUploadedFiles.length > 0) {
         const submissionRef = doc(db, "submissions", user.uid);
-        const docSnap = await getDoc(submissionRef); // First, check if a document already exists
+        const docSnap = await getDoc(submissionRef);
 
         if (docSnap.exists()) {
-            // If the document exists, UPDATE it with the new file information.
-            await updateDoc(submissionRef, {
-                uploadedFiles: arrayUnion(...newlyUploadedFiles)
-            });
+            // --- MANUAL UPDATE LOGIC ---
+            // 1. Get the array of files that already exists.
+            const existingFiles = docSnap.data().uploadedFiles || [];
+            
+            // 2. Create a new array with the old files and the new files.
+            const updatedFiles = [...existingFiles, ...newlyUploadedFiles];
+            
+            // 3. Overwrite the field with the new, complete array.
+            await updateDoc(submissionRef, { uploadedFiles: updatedFiles });
+
         } else {
-            // If the document DOES NOT exist, CREATE it for the first time.
+            // If the document does not exist, create it.
             await setDoc(submissionRef, {
                 userId: user.uid,
                 userEmail: user.email,
-                status: "Under Review", // Set a default status
+                status: "Under Review",
                 submittedAt: serverTimestamp(),
-                uploadedFiles: newlyUploadedFiles // Create the array with the new files
+                uploadedFiles: newlyUploadedFiles 
             });
         }
     }
