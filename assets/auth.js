@@ -179,10 +179,6 @@ async function submitQuestionnaire(user, formData, files) {
 }
 
 // --- Function to upload additional files ---
-// Replace the existing uploadAdditionalFiles function in auth.js with this one.
-
-// Replace the existing uploadAdditionalFiles function in auth.js with this one.
-
 async function uploadAdditionalFiles(user, files) {
     if (!user) throw new Error("User not authenticated");
 
@@ -194,30 +190,22 @@ async function uploadAdditionalFiles(user, files) {
         const docSnap = await getDoc(submissionRef);
 
         if (docSnap.exists()) {
-            // Manual "array union"
             const existingFiles = docSnap.data().uploadedFiles || [];
             const updatedFiles = [...existingFiles, ...newlyUploadedFiles];
             
-            // --- NEW: Log the data before sending ---
-            const updateData = { uploadedFiles: updatedFiles };
-            console.log("Attempting to UPDATE document with this data:", updateData);
-            
-            await updateDoc(submissionRef, updateData);
+            // --- THE FINAL CHANGE ---
+            // Using setDoc with merge:true instead of updateDoc
+            await setDoc(submissionRef, { uploadedFiles: updatedFiles }, { merge: true });
 
         } else {
-            // Create a new document
-            const newDocData = {
+            // If the document does not exist, create it (this part remains the same).
+            await setDoc(submissionRef, {
                 userId: user.uid,
                 userEmail: user.email,
                 status: "Under Review",
                 submittedAt: serverTimestamp(),
                 uploadedFiles: newlyUploadedFiles 
-            };
-            
-            // --- NEW: Log the data before sending ---
-            console.log("Attempting to CREATE document with this data:", newDocData);
-
-            await setDoc(submissionRef, newDocData);
+            });
         }
     }
     return newlyUploadedFiles;
