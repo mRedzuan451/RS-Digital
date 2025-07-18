@@ -178,36 +178,22 @@ async function submitQuestionnaire(user, formData, files) {
     }
 }
 
-// --- Function to upload additional files ---
 async function uploadAdditionalFiles(user, files) {
     if (!user) throw new Error("User not authenticated");
 
-    // Upload files to Storage
+    // Step 1: Upload files to Storage (This part stays the same).
     const newlyUploadedFiles = await _uploadFilesToStorage(user, files);
 
     if (newlyUploadedFiles.length > 0) {
-        const submissionRef = doc(db, "submissions", user.uid);
-        const docSnap = await getDoc(submissionRef);
-
-        if (docSnap.exists()) {
-            const existingFiles = docSnap.data().uploadedFiles || [];
-            const updatedFiles = [...existingFiles, ...newlyUploadedFiles];
-            
-            // --- THE FINAL CHANGE ---
-            // Using setDoc with merge:true instead of updateDoc
-            await setDoc(submissionRef, { uploadedFiles: updatedFiles }, { merge: true });
-
-        } else {
-            // If the document does not exist, create it (this part remains the same).
-            await setDoc(submissionRef, {
-                userId: user.uid,
-                userEmail: user.email,
-                status: "Under Review",
-                submittedAt: serverTimestamp(),
-                uploadedFiles: newlyUploadedFiles 
-            });
-        }
+        // Step 2: Call the Cloud Function to update the database.
+        const addFilesFunction = httpsCallable(functions, 'addUploadedFiles');
+        
+        await addFilesFunction({ 
+            userId: user.uid, 
+            files: newlyUploadedFiles 
+        });
     }
+    
     return newlyUploadedFiles;
 }
 

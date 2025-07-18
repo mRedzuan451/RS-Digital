@@ -199,3 +199,40 @@ exports.getUserInfo = onCall(async (request) => {
     throw new HttpsError('internal', 'Could not fetch user information.');
   }
 });
+
+// Add this new function to your functions/index.js file
+
+exports.addUploadedFiles = onCall(async (request) => {
+  // Check if the user is authenticated.
+  if (!request.auth) {
+    throw new HttpsError('unauthenticated', 'The function must be called while authenticated.');
+  }
+
+  const { userId, files } = request.data;
+
+  // Validate the data
+  if (!userId || !files || !Array.isArray(files)) {
+    throw new HttpsError('invalid-argument', 'Missing required fields: userId and files array.');
+  }
+  
+  // Security check: Make sure the authenticated user is the one they claim to be.
+  if (request.auth.uid !== userId) {
+      throw new HttpsError('permission-denied', 'You can only update your own project.');
+  }
+
+  try {
+    const db = admin.firestore();
+    const docRef = db.collection('submissions').doc(userId);
+    
+    // Use the Admin SDK's arrayUnion to update the document.
+    await docRef.update({
+      uploadedFiles: admin.firestore.FieldValue.arrayUnion(...files)
+    });
+    
+    return { message: 'Files added successfully' };
+
+  } catch (error) {
+    logger.error("Error adding uploaded files:", error);
+    throw new HttpsError('internal', 'Could not update file information.');
+  }
+});
