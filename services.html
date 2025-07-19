@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en-MY">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services | RS Digital</title>
+    <meta name="description" content="Detailed web design packages from RS Digital. Choose from our Landing Page or Small Business packages to get started.">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base styles copied from index.html for consistency */
+        :root {
+            --bg-color: #0a192f;
+            --nav-bg-color: rgba(10, 25, 47, 0.85);
+            --card-bg-color: #112240;
+            --border-color: #233554;
+            --heading-color: #ccd6f6;
+            --text-color: #8892b0;
+            --light-text-color: #a8b2d1;
+            --accent-color: #64ffda;
+            --button-text-color: #0a192f;
+            --font-family: 'Poppins', sans-serif;
+            --header-height: 70px;
+        }
+
+        body.light-mode {
+            --bg-color: #F7F9FC;
+            --nav-bg-color: rgba(255, 255, 255, 0.85);
+            --card-bg-color: #FFFFFF;
+            --border-color: #e0e0e0;
+            --heading-color: #1A2A4C;
+            --text-color: #555555;
+            --light-text-color: #333333;
+            --accent-color: #007BFF;
+            --button-text-color: #FFFFFF;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: var(--header-height); }
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(10, 25, 47, 0.8), rgba(10, 25, 47, 0.8)), url('assets/dark-background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+        body.light-mode { background-image: url('assets/light-background.jpg'); }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 60px 0; }
+        h1, h2, h3 { line-height: 1.2; margin-bottom: 20px; color: var(--heading-color); }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; text-align: center; }
+        h3 { font-size: 1.5rem; }
+        p { margin-bottom: 15px; color: var(--text-color); }
+        .subtitle { font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px auto; text-align: center; color: var(--light-text-color); }
+        
+        .btn { display: inline-block; padding: 12px 24px; border-radius: 5px; font-weight: bold; font-size: 1rem; text-align: center; transition: all 0.3s ease; border: 2px solid var(--accent-color); color: var(--accent-color); text-decoration: none; }
+        .btn-primary { background-color: var(--accent-color); color: var(--button-text-color); }
+        .btn:hover { background-color: rgba(100, 255, 218, 0.1); }
+        .btn-primary:hover { background-color: var(--accent-color); opacity: 0.85; }
+
+        /* --- NEW STYLES for Services Page --- */
+        .page-header {
+            text-align: center;
+            padding: 80px 0;
+        }
+        .packages-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .package-card {
+            background-color: var(--card-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .package-card h3 {
+            color: var(--accent-color);
+            font-size: 1.6rem;
+        }
+        .package-card .price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--light-text-color);
+            margin-bottom: 15px;
+        }
+        .package-card .best-for {
+            font-style: italic;
+            margin-bottom: 25px;
+            min-height: 40px; /* Ensures cards align */
+        }
+        .package-card ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+            flex-grow: 1; /* Makes the list take up space to align buttons */
+        }
+        .package-card ul li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .package-card ul li .fa-check-circle {
+            color: var(--accent-color);
+        }
+        .package-card .btn {
+            width: 100%;
+        }
+
+        .included-section {
+            text-align: center;
+            margin-top: 60px;
+        }
+        .included-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        .included-item {
+            background-color: var(--card-bg-color);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .included-item .fa-check-circle {
+            color: var(--accent-color);
+            margin-right: 10px;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .packages-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Our Website Packages</h1>
+                <p class="subtitle">Clear, straightforward pricing to get your business online. Choose the package that's right for you, or contact us for a custom quote.</p>
+            </div>
+        </section>
+
+        <section id="packages">
+            <div class="container">
+                <div class="packages-container">
+                    
+                    <div class="package-card">
+                        <h3>Landing Page Package</h3>
+                        <p class="price">Starting from RM 800</p>
+                        <p class="best-for">Best for professionals, freelancers, and businesses needing a strong, single-page online presence.</p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Single-Page "Digital Name Card" Design</li>
+                            <li><i class="fas fa-check-circle"></i> Hero Section with a Strong Headline</li>
+                            <li><i class="fas fa-check-circle"></i> About Us Section</li>
+                            <li><i class="fas fa-check-circle"></i> Services / Features Showcase</li>
+                            <li><i class="fas fa-check-circle"></i> Testimonials / Photo Gallery</li>
+                            <li><i class="fas fa-check-circle"></i> Contact Form & WhatsApp Integration</li>
+                        </ul>
+                        <a href="questionnaire.html" class="btn btn-primary">Get Started</a>
+                    </div>
+
+                    <div class="package-card">
+                        <h3>Small Business Package</h3>
+                        <p class="price">Starting from RM 2,000</p>
+                        <p class="best-for">Best for established SMEs, service providers, and companies wanting a comprehensive, multi-page website.</p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Up to 5 Pages (e.g., Home, About, Services)</li>
+                            <li><i class="fas fa-check-circle"></i> Includes all Landing Page features</li>
+                            <li><i class="fas fa-check-circle"></i> Detailed Service/Product Pages</li>
+                            <li><i class="fas fa-check-circle"></i> Optional Blog / News Section (CMS)</li>
+                            <li><i class="fas fa-check-circle"></i> Our Team & Testimonials Pages</li>
+                            <li><i class="fas fa-check-circle"></i> Advanced Contact Page with Map</li>
+                        </ul>
+                        <a href="questionnaire.html" class="btn btn-primary">Get Started</a>
+                    </div>
+                </div>
+
+                <div class="included-section">
+                    <h2>What's Included in Every Package?</h2>
+                    <div class="included-grid">
+                        <div class="included-item"><i class="fas fa-check-circle"></i> Modern & Professional Design</div>
+                        <div class="included-item"><i class="fas fa-check-circle"></i> Mobile-Responsive on All Devices</div>
+                        <div class="included-item"><i class="fas fa-check-circle"></i> Basic SEO Setup for Google</div>
+                        <div class="included-item"><i class="fas fa-check-circle"></i> Fast Loading Speeds</div>
+                        <div class="included-item"><i class="fas fa-check-circle"></i> Secure (HTTPS)</div>
+                        <div class="included-item"><i class="fas fa-check-circle"></i> 1 Hour of Training & Handover</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    </body>
+</html>
